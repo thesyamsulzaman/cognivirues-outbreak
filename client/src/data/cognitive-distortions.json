@@ -1,0 +1,119 @@
+{
+  "all_or_nothing_thinking": {
+    "title": "All or Nothing Thinking",
+    "emoji": ["🌓"],
+    "explanation": {
+      "text": "This distortion happens when we have no room for middle ground. If we think that a small fault in ourselves means we’re fundamentally rotten or otherwise terrible, we’re likely engaging in all or nothing thinking.",
+      "example": "I bombed the interview, I must be unhirable."
+    },
+    "one_liner": "That was a thorough waste of time"
+  },
+  "catastrophizing": {
+    "title": "Catastrophizing",
+    "emoji": ["🤯", "💥"],
+    "explanation": {
+      "text": "If we’re taking a small problem and blowing it way out of proportion, we’re catastrophizing. Did you make a small mistake at work and are dreading if someone found out even though it’s nothing serious? You’re probably catastrophizing.",
+      "example": "I'm feeling jittery, I might be having a heart attack."
+    },
+    "one_liner": "Focusing on the worst possible scenario"
+  },
+  "emotional_reasoning": {
+    "title": "Emotional Reasoning",
+    "emoji": ["🎭"],
+    "explanation": {
+      "text": [
+        "\"I feel it, therefore it must be true.\" If you find yourself justifying the \"danger\" of something innocuous because you’re afraid of it, then you’re likely engaging in emotional reasoning. Things aren’t dangerous because we’re afraid of them and we’re not awful just because we may think we are.",
+        "This one is often hard to recognize. It takes some effort to recognize when your emotional mind is taking the logical reins."
+      ],
+      "example": "I feel guilty, therefore I must have done something bad."
+    },
+    "one_liner": "I feel afraid, so I'll have a panic attack"
+  },
+  "fortune_telling": {
+    "title": "Fortune Telling",
+    "emoji": ["🔮"],
+    "explanation": {
+      "text": "This distortion happens when we predict the future. We often overestimate our abilities to predict what will happen. Frequently we'll worry that something might happen and then start to look for evidence that it will occur.",
+      "example": "The plane I'm about to get on will crash."
+    },
+    "one_liner": "I'll get sick at the party"
+  },
+  "labeling": {
+    "title": "Labeling",
+    "emoji": ["🏷", "🍙"],
+    "explanation": {
+      "text": "If we're taking one characteristic of a person and applying it to the whole person, we're labeling. If someone brushed us off, they might not be a \"jerk,\" maybe they're just in a hurry. This applies to ourselves as well; just because we make a mistake doesn't mean we're a \"failure.\"",
+      "example": "I failed a test, so I'm a bad student."
+    },
+    "one_liner": "He's a jerk"
+  },
+  "magnification_of_the_negative": {
+    "title": "Magnification of the Negative",
+    "emoji": ["👎"],
+    "explanation": {
+      "text": "If you’re judging a situation based entirely on the negative parts and not considering the positive parts, you’re likely magnifying the negative. If you’re constantly berating yourself for bombing a job interview, you’re probably filtering out all the experience you gained from that interview.",
+      "example": "I ate healthy this week, but I skipped my run."
+    },
+    "one_liner": "Focusing only on what went wrong"
+  },
+  "mind_reading": {
+    "title": "Mind Reading",
+    "emoji": ["🧠", "💭"],
+    "explanation": {
+      "text": "If we're worried about what someone else is thinking about us, we're attempting to read minds. Unless someone tells you what they're thinking, you have absolutely no way of knowing. So why assume the worst?",
+      "example": "I think I was rude to George, I'll bet he hates me."
+    },
+    "one_liner": "I'll bet he hates me now"
+  },
+  "minimization_of_the_positive": {
+    "title": "Minimization of the Positive",
+    "emoji": ["👍"],
+    "explanation": {
+      "text": "If we downplay the good things that are happening to us, we're minimizing the positive. Even if our day didn't go 100% as planned, it doesn't mean that the 60% that did go right should be ignored.",
+      "example": "Many people liked my presentation, but I stumbled giving the intro, so it was bad."
+    },
+    "one_liner": "Ignoring the good things that happened"
+  },
+  "other_blaming": {
+    "title": "Other Blaming",
+    "emoji": ["🧛‍", "👺"],
+    "explanation": {
+      "text": [
+        "If a bad situation must be the fault of someone, we're other-blaming. If you failed an exam and you're blaming the teacher, you're directing your energy to the wrong place. Someone cut you off on the highway? If you honk your horn, flip them off, and stew, how is that helping? Now you're cut off and mad!",
+        "This doesn't mean you have to blame yourself for every negative situation. You don't have to blame anyone. No one has to be at fault if you let the situation pass without attaching blame."
+      ],
+      "example": "That jerk is taking too long in line and I'm going to be late!"
+    },
+    "one_liner": "Assigning all the blame to someone else"
+  },
+  "over_generalization": {
+    "title": "Over Generalization",
+    "emoji": ["👯‍"],
+    "explanation": {
+      "text": "If we draw conclusions based on just one example, we're over generalizing. If you bombed a presentation and assume that means you're \"bad\" at presenting, you're over-generalizing.",
+      "example": "No one asked me to dance, so no one ever will."
+    },
+    "one_liner": "Everyone will let me down"
+  },
+  "self_blaming": {
+    "title": "Self Blaming",
+    "emoji": ["👁", "🚷"],
+    "explanation": {
+      "text": "If you're attributing a negative situation entirely to yourself, you're self-blaming. You don't have to be responsible for every bad thing that happens. If you're getting caught in traffic and you're berating yourself for not leaving earlier, you're self-blaming. Would you treat someone else this way?",
+      "example": "My son is failing in school, I must have failed him."
+    },
+    "one_liner": "Taking all the blame on yourself"
+  },
+  "should_statements": {
+    "title": "Should Statements",
+    "emoji": ["✨"],
+    "explanation": {
+      "text": [
+        "If you're assigning someone abilities they don't have, you're using faulty \"should\" statements. For example, if you have a fear of flying and are telling yourself \"I shouldn't be afraid of this, there's nothing wrong with the airplane!\" you're putting an undue burden on yourself. You have a fear of flying! It's normal for people who have a fear of flying to be afraid flying!",
+        "Should statements can seem nonsensical when you say it out loud; that's the point! They're illogical!"
+      ],
+      "example": "I'm an adult, I shouldn't have these mental issues."
+    },
+    "one_liner": "I should have been better"
+  }
+}

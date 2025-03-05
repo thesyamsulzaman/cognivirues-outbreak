@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "./dist",
+    "strict": true,
+    "lib": ["esnext"],
+    "esModuleInterop": true,
+    "noImplicitAny": false,
+    "rootDir": "./src",
+    "declaration": true,
+    "paths": {
+      ".prisma/client/index-browser": [
+        "./node_modules/.prisma/client/index-browser.js"
+      ]
+    },
+    "typeRoots": ["./node_modules/@types", "./types"]
+  },
+  "include": ["src/**/*.ts"]
+}

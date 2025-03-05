@@ -1,0 +1,52 @@
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+      - server
+    environment:
+      - VITE_API_BASE_URL=https://cognivirues-server:3000
+    networks:
+      - cognivirues-client
+    image: thesyamsulzaman/cognivirues-client:latest
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      - NODE_ENV=development
+    networks:
+      - cognivirues-server
+      - cognivirues-postgres
+    image: thesyamsulzaman/cognivirues-server:latest
+
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=cognivirues
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - cognivirues-postgres
+
+networks:
+  cognivirues-postgres:
+  cognivirues-client:
+  cognivirues-server:
+  
+volumes:
+  pgdata:
