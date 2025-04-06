@@ -3,10 +3,9 @@
 Empowering users to identify and manage cognitive distortions – negative and inaccurate thought patterns – through a fun and addictive gameplay.
 
 ## Features
-- **Engaging RPG Mechanics**: Experience an 8-bit dungeon crawler with turn-based combat, puzzles, and interactive storytelling.
+- **Engaging RPG Mechanics**: 8-bit dungeon crawler with turn-based combat, puzzles, and interactive storytelling.
 - **AI-Powered Journaling**: Write daily journals that are analyzed by AI to detect cognitive distortions and provide feedback.
-- **Breaking the 4th Wall**: The game interacts with the player in unexpected ways, enhancing immersion.
-- **Personalized Insights**: The AI recommends journaling topics based on the player's thoughts and experiences.
+- **Personalized Enemeies**: The AI generates enemies based on the player's thoughts and experiences, creating "battling your own thoughts" experience.
 
 ## Screenshots
 ### Main Menu
