@@ -1,5 +1,6 @@
-import prisma from "../db";
+import prisma from "../libs/db";
 import { comparePassword, createJWT, hashPassword } from "../utils/auth";
+import { Request, Response, NextFunction } from "express";
 
 const GOOGLE_OAUTH_URL = process.env.GOOGLE_OAUTH_URL;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -15,7 +16,6 @@ const GOOGLE_OAUTH_SCOPES = [
 /**
  * GOOGLE OAUTH FLOW
  */
-
 const fetchAccessToken = async (code) => {
   const data = {
     code,
@@ -80,7 +80,7 @@ export const googleSignInCallback = async (req, res) => {
       user = await prisma.player.create({
         data: {
           email: userInfo.email,
-          username: userInfo.given_name,
+          username: userInfo.given_name || userInfo?.email?.split("@")[0],
         },
       });
     }
@@ -124,8 +124,14 @@ export const getPlayerProfile = async (req: any, res: any, next: any) => {
       },
     });
 
+    const profile = {
+      id: user?.id,
+      username: user?.username,
+      email: user?.email,
+    };
+
     res.json({
-      profile: { id: user?.id, username: user?.username, email: user?.email },
+      profile,
     });
   } catch (error) {
     next(error);
@@ -139,13 +145,21 @@ export const signIn = async (req: any, res: any, next: any) => {
         email: req.body.email,
       },
     });
-    const isValid = await comparePassword(req.body.password, user?.password!);
-    if (!isValid) {
-      res.status(401).json({ message: "nope" });
-      return;
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Unknown user, please make user the user was registered",
+      });
     }
+
+    const isValid = await comparePassword(req.body.password, user?.password!);
+
+    if (!isValid) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
     const token = createJWT(user);
-    res.json({ token });
+    return res.json({ token });
   } catch (err) {
     next(err);
   }

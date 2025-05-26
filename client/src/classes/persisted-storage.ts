@@ -10,6 +10,10 @@ export class PersistedStorage {
     return storedEntries ? JSON.parse(storedEntries) : [];
   }
 
+  remove() {
+    window.localStorage.removeItem(this.name);
+  }
+
   save(entries: any) {
     window.localStorage.setItem(this.name, JSON.stringify(entries));
   }

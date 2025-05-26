@@ -15,7 +15,6 @@
   /* DIALOG UI */
   --border-color: #291d4d;
   --dialog-background: #fff3b4;
-
   --menu-background: #ffe8d2;
   --menu-border-color: #a48465;
   --menu-font-color: #3a160d;
@@ -47,7 +46,7 @@ body {
 /* Scale up game art if we can fit it. 2x */
 @media(min-width: 360px) {
   :root {
-    /*--pixel-size: 2;*/
+    // --pixel-size: 2;
     --pixel-size: 3;
     /* Using this for better screen capture layout */
   }

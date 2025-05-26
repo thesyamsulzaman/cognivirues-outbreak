@@ -2,14 +2,18 @@ import { PLACEMENT_TYPE_ICE } from "@/constants/helpers";
 
 export class Collision {
   placementsAtPosition: any[];
+  tilesAtPosition: any[];
+
   forBody: any;
   level: any;
   x: any;
   y: any;
+
   constructor(forBody: any, level: any, position: any = null) {
     this.forBody = forBody;
     this.level = level;
     this.placementsAtPosition = [];
+    this.tilesAtPosition = [];
     this.x = position ? position.x : forBody.x;
     this.y = position ? position.y : forBody.y;
     this.scanPlacementsAtPosition();
@@ -22,6 +26,11 @@ export class Collision {
         return !isSelf && placement.x === this.x && placement.y === this.y;
       }
     );
+
+    this.tilesAtPosition = this.level.tiles.filter((tile: any) => {
+      const isSelf = tile?.id === this.forBody.id;
+      return !isSelf && tile.x === this.x && tile.y === this.y;
+    });
   }
 
   withSolidPlacement() {
@@ -38,6 +47,14 @@ export class Collision {
           placement.addsItemToInventoryOnCollide(this.forBody)
         );
       });
+    }
+
+    return null;
+  }
+
+  withGetDialog() {
+    if (this.forBody.canTriggerDialog) {
+      return this.tilesAtPosition.find((tile) => tile?.cutscene);
     }
 
     return null;

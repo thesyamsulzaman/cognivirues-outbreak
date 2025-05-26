@@ -1,4 +1,4 @@
-import { EditMode, EditModeType, LevelStateData } from "@/classes/level-state";
+import { EditMode, LevelStateData } from "@/classes/level-state";
 import {
   PLACEMENT_TYPE_WALL,
   PLACEMENT_TYPE_FIRE,
@@ -13,11 +13,71 @@ import {
   PLACEMENT_TYPE_BOUND_TOP,
   Direction,
   PLACEMENT_TYPE_BOUND,
+  PLACEMENT_TYPE_CELEBRATION,
+  PLACEMENT_TYPE_CONVEYOR,
+  PLACEMENT_TYPE_FIRE_PICKUP,
+  PLACEMENT_TYPE_FLOUR,
+  PLACEMENT_TYPE_FLYING_ENEMY,
+  PLACEMENT_TYPE_GOAL,
+  PLACEMENT_TYPE_GROUND_ENEMY,
+  PLACEMENT_TYPE_HERO,
+  PLACEMENT_TYPE_ICE,
+  PLACEMENT_TYPE_ICE_PICKUP,
+  PLACEMENT_TYPE_INFECTED,
+  PLACEMENT_TYPE_KEY,
+  PLACEMENT_TYPE_LOCK,
+  PLACEMENT_TYPE_ROAMING_ENEMY,
+  PLACEMENT_TYPE_TELEPORT,
+  PLACEMENT_TYPE_THIEF,
+  PLACEMENT_TYPE_WATER_PICKUP,
+  PLACEMENT_TYPE_CIABATTA,
+  PLACEMENT_TYPE_DEMON_BOSS,
 } from "@/constants/helpers";
-import { Group, Select, Switch, Tabs, TextInput } from "@mantine/core";
+import { Select, Tabs } from "@mantine/core";
+
+const PlacementOptions = [
+  { label: "Hero", value: PLACEMENT_TYPE_HERO },
+  { label: "Goal", value: PLACEMENT_TYPE_GOAL },
+  { label: "Ciabatta", value: PLACEMENT_TYPE_CIABATTA },
+  { label: "Wall", value: PLACEMENT_TYPE_WALL },
+  { label: "Flour", value: PLACEMENT_TYPE_FLOUR },
+  { label: "Celebration", value: PLACEMENT_TYPE_CELEBRATION },
+  { label: "Ground Enemy", value: PLACEMENT_TYPE_GROUND_ENEMY },
+  { label: "Flying Enemy", value: PLACEMENT_TYPE_FLYING_ENEMY },
+  { label: "Lock", value: PLACEMENT_TYPE_LOCK },
+  { label: "Key", value: PLACEMENT_TYPE_KEY },
+  { label: "Water", value: PLACEMENT_TYPE_WATER },
+  { label: "Water Pickup", value: PLACEMENT_TYPE_WATER_PICKUP },
+  { label: "Roaming Enemy", value: PLACEMENT_TYPE_ROAMING_ENEMY },
+  { label: "Conveyor Belt", value: PLACEMENT_TYPE_CONVEYOR },
+  { label: "Ice", value: PLACEMENT_TYPE_ICE },
+  { label: "Ice Pickup", value: PLACEMENT_TYPE_ICE_PICKUP },
+  { label: "Fire", value: PLACEMENT_TYPE_FIRE },
+  { label: "Fire Pickup", value: PLACEMENT_TYPE_FIRE_PICKUP },
+  { label: "Switch Door", value: PLACEMENT_TYPE_SWITCH_DOOR },
+  { label: "Purple Switch", value: PLACEMENT_TYPE_SWITCH },
+  { label: "Teleport", value: PLACEMENT_TYPE_TELEPORT },
+  { label: "Thief", value: PLACEMENT_TYPE_THIEF },
+  { label: "Infected Hero", value: PLACEMENT_TYPE_INFECTED },
+  { label: "Demon Boss", value: PLACEMENT_TYPE_DEMON_BOSS },
+];
+
+const MapPlacementOptions = [
+  { label: "Left", value: PLACEMENT_TYPE_BOUND_LEFT },
+  { label: "Right", value: PLACEMENT_TYPE_BOUND_RIGHT },
+  { label: "Bottom", value: PLACEMENT_TYPE_BOUND_BOTTOM },
+  { label: "Top", value: PLACEMENT_TYPE_BOUND_TOP },
+  { label: "Floor", value: "FLOOR" },
+  { label: "Blank Floor", value: "BLANK" },
+];
 
 const GameEditor = ({ level }: { level: LevelStateData }) => {
   const themeTiles = THEME_TILES_MAP[level?.theme as LevelThemes];
+
+  const mapObjectValue =
+    level?.editModeTile?.type === PLACEMENT_TYPE_BOUND
+      ? `${PLACEMENT_TYPE_BOUND}_${level?.editModeTile?.direction}`
+      : level?.editModeTile?.type;
 
   return (
     <form className="bg-[#242424] p-5 rounded-md shadow-md w-[425px]">
@@ -39,34 +99,17 @@ const GameEditor = ({ level }: { level: LevelStateData }) => {
               placeholder="Pick value"
               value={level.editModePlacement.type}
               onChange={(option) => {
-                level.setEditModePlacement({ type: option });
+                level.setEditModePlacementType({ type: option });
               }}
-              data={[
-                { label: "Wall", value: PLACEMENT_TYPE_WALL },
-                { label: "Fire", value: PLACEMENT_TYPE_FIRE },
-                { label: "Water", value: PLACEMENT_TYPE_WATER },
-                { label: "Purple Switch", value: PLACEMENT_TYPE_SWITCH },
-                { label: "Door", value: PLACEMENT_TYPE_SWITCH_DOOR },
-              ]}
+              data={PlacementOptions}
             />
           </div>
         </Tabs.Panel>
         <Tabs.Panel value={EditMode.MAP}>
           <div className="my-4 gap-2 space-y-3">
-            {/* <Group>
-              <TextInput type="number" label="Width" placeholder="1 - 20" />
-              <TextInput type="number" label="Height" placeholder="1 - 20" />
-            </Group>
-
-            <Switch defaultChecked label="Floor Removal" /> */}
-
             <Select
               label="Select map object:"
-              value={
-                level?.editModeTile?.type === PLACEMENT_TYPE_BOUND
-                  ? `${PLACEMENT_TYPE_BOUND}_${level?.editModeTile?.direction}`
-                  : level?.editModeTile?.type
-              }
+              value={mapObjectValue}
               onChange={(option) => {
                 if (
                   option?.includes(Direction.Left) ||
@@ -84,14 +127,7 @@ const GameEditor = ({ level }: { level: LevelStateData }) => {
                   level.setEditModeTile({ type: option });
                 }
               }}
-              data={[
-                { label: "Left", value: PLACEMENT_TYPE_BOUND_LEFT },
-                { label: "Right", value: PLACEMENT_TYPE_BOUND_RIGHT },
-                { label: "Bottom", value: PLACEMENT_TYPE_BOUND_BOTTOM },
-                { label: "Top", value: PLACEMENT_TYPE_BOUND_TOP },
-                { label: "Floor", value: "FLOOR" },
-                { label: "Blank Floor", value: "BLANK" },
-              ]}
+              data={MapPlacementOptions}
             />
           </div>
         </Tabs.Panel>

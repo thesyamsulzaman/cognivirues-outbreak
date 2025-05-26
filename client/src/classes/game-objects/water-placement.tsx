@@ -4,8 +4,10 @@ import Placement from "../placement";
 import {
   BODY_SKINS,
   PLACEMENT_TYPE_HERO,
+  PLACEMENT_TYPE_WATER,
   PLACEMENT_TYPE_WATER_PICKUP,
 } from "@/constants/helpers";
+import { JSX } from "react";
 
 export class WaterPlacement extends Placement {
   changesHeroSkinOnCollide(): string | null {
@@ -24,7 +26,8 @@ export class WaterPlacement extends Placement {
   }
 
   renderComponent(): JSX.Element | null {
-    const waterFrames = this.level?.animatedFrames?.waterFrame;
+    const waterFrames =
+      this.level?.animatedFrames?.getFrame(PLACEMENT_TYPE_WATER);
 
     return <Sprite frameCoordinate={waterFrames} />;
   }

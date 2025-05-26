@@ -2,9 +2,11 @@ import levels from "../../levels/levels-map";
 import progressEntry from "@/classes/progress-entry";
 import LevelCompletedSvg from "../object-graphics/level-completed-svg";
 import { useGame } from "@/contexts/game";
+import { useNavigate } from "react-router-dom";
 
 function LevelCompleteMessage() {
-  const { levelId, setLevelId } = useGame();
+  const navigate = useNavigate();
+  const { levelId, setLevelId } = useGame({});
 
   const onSendToNextLevel = () => {
     const levelKeys = Object.keys(levels);
@@ -16,7 +18,11 @@ function LevelCompleteMessage() {
       completedLevels: levelKeys.slice(0, currentIndex + 1 + 1),
     });
 
-    setLevelId(nextLevelId as keyof typeof levels);
+    if (levelKeys[currentIndex] === "level-7") {
+      navigate("/");
+    } else {
+      setLevelId(nextLevelId as keyof typeof levels);
+    }
   };
 
   return (

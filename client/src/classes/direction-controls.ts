@@ -14,6 +14,7 @@ export class DirectionControls {
   heldDirections: never[];
   directionKeyDownHandler: (event: any) => void;
   directionKeyUpHandler: (event: any) => void;
+
   constructor() {
     this.directionKeys = {
       ArrowUp: Direction.Top,

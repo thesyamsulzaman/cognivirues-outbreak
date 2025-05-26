@@ -15,9 +15,14 @@ export class BodyPlacement extends Placement {
     return collision.withLock();
   }
 
-  getInfectedHeroAtNextPosition(direction: Direction) {
+  getInfectedAtNextPosition(direction: Direction) {
     const collision = this.getCollisionAtNextPosition(direction);
     return collision.withActivateBattleScreen();
+  }
+
+  getDialogAtPosition(direction: Direction) {
+    const collision = this.getCollisionAtNextPosition(direction);
+    return collision.withGetDialog();
   }
 
   isSolidAtNextPosition(direction: Direction) {
@@ -30,22 +35,17 @@ export class BodyPlacement extends Placement {
     }
 
     const collision = this.getCollisionAtNextPosition(direction);
-
-    /**
-     * Check for wall corner ( TOP, RIGHT, LEFT, BOTTOM )
-     */
-
     /**
      * Refactor this for all bound
      */
-    // const isOutOfBounds = this.level.isPositionOutOfBounds(
-    //   collision.x,
-    //   collision.y
-    // );
+    const isOutOfBounds = this.level.isPositionOutOfBounds(
+      collision.x,
+      collision.y
+    );
 
-    // if (isOutOfBounds) {
-    //   return true;
-    // }
+    if (isOutOfBounds) {
+      return true;
+    }
 
     return Boolean(collision.withSolidPlacement());
   }
@@ -130,15 +130,6 @@ export class BodyPlacement extends Placement {
     }
 
     /**
-     * Death Collision
-     */
-    const takesDamage = collisions.withSelfGetDamaged();
-    if (takesDamage) {
-      this.level.deathOutcome = takesDamage.type;
-      this.level.gameLoop.stop();
-    }
-
-    /**
      * Complete Level Collision
      */
     const completesLevel = collisions.withCompletesLevel();
@@ -177,6 +168,15 @@ export class BodyPlacement extends Placement {
     /**
      * Takes damage
      */
+    const takesDamages = collisions.withSelfGetDamaged();
+
+    if (takesDamages) {
+      this.takesDamage(takesDamages.type);
+    }
+  }
+
+  takesDamage(arg: any): null {
+    return null;
   }
 
   onPostMove(): null | void {}
@@ -189,6 +189,7 @@ export class BodyPlacement extends Placement {
 
     //Elevate ramp up or down at beginning/end of movement
     const PIXELS_FROM_END = 2;
+
     if (
       this.movingPixelsRemaining < PIXELS_FROM_END ||
       this.movingPixelsRemaining > 16 - PIXELS_FROM_END

@@ -1,128 +1,255 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import OpenAI from "openai";
+import { runAIAgent } from "../libs/ai";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { tools } from "../libs/ai/tools";
+import { runTool } from "../libs/ai/ai-tool-runner";
+import {
+  addMessages,
+  clearMessages,
+  getMessages,
+  saveToolResponse,
+} from "../libs/memory";
 
-if (!process.env.GOOGLE_AI_API_KEY) {
-  throw new Error("Missing GOOGLE_AI_API_KEY environment variable");
-}
+import * as dotenv from "dotenv";
+import prisma from "../libs/db";
+import { buildJournalPayload, extractJournal } from "../utils/mappers";
+import { distortionDetectionToolDefinition } from "../libs/ai/tools/distortion-detection";
+import { ENEMIES_AMOUNT, journalOutputSchema } from "../libs/ai/schemas";
+import { enemiesGenerationToolDefinition } from "../libs/ai/tools/enemies-generation";
+
+dotenv.config();
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("Missing OPENAI_API_KEY environment variable");
 }
 
-const openai = new OpenAI();
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
-
-const distortionKeys = [
-  "all_or_nothing_thinking",
-  "catastrophizing",
-  "emotional_reasoning",
-  "fortune_telling",
-  "labeling",
-  "magnification_of_the_negative",
-  "mind_reading",
-  "minimization_of_the_positive",
-  "other_blaming",
-  "over_generalization",
-  "self_blaming",
-  "should_statements",
-];
-
-const generatePrompt = ({ body }) => {
-  const config = { depth: 1, focusArea: null };
-
-  const prompt = `
-    Provide a comprehensive cognitive distortions breakdown from the following journal and extract it's main theme: "${body}"
-    
-    Depth level: ${config.depth}
-
-    Format your response as a valid JSON object with this structure:
-    {
-      "title": "Context specific main idea of the journal. Do not use markdown formatting or special characters.",
-      "distortions": [ List of cognitive distortions formatted as a valid JSON object with this structure: 
-        { 
-          key: "Distortion category key name, should match the ${distortionKeys}, ( Do not change the property to anything else )",
-          type: "Distortion category name",
-          description: "Pinpoint it from the journal and give brief distortion explaination with sympathy ( use "You" only, not "they", "writes", "he/she"), also give some advice on what the writers can do in the situation ( do not create a new property, keep it in "description" property),
-        }
-      ]
-    }
-
-    Rules:
-    1. Focus on the concrete and written cognitive distortions characteristics from the journal.
-    2. Always refer to 10 Common type of Cognitive Distortions
-    3. Response must be ONLY the JSON object, no other text.
-    4. Adjust the detail level based on the depth parameter.
-    5. Do not use markdown formatting or special characters in any text fields.  
-    6. The "key" property should match ${distortionKeys} or no value at all
-  `;
-
-  return prompt;
-};
-
-export const openAIBreakdownJournal = async (req: any, res: any, next: any) => {
-  const payload = {
-    title: req.body.title,
-    body: req.body.body,
-  };
-
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    temperature: 0.1,
-    messages: [
-      { role: "system", content: generatePrompt({ body: payload.body }) },
-    ],
-  });
-
-  console.log(response.choices[0].message.content);
-
-  res.json({ message: "Breaking down journal" });
-};
-
-export const geminiBreakdownJournal = async (req: any, res: any, next: any) => {
+export const journalBreakdown = async (req: any, res: any, next: any) => {
   try {
+    const output = {};
+    const { name: distortionDetection } = distortionDetectionToolDefinition;
+    const { name: enemiesGenerationTool } = enemiesGenerationToolDefinition;
+    await clearMessages();
+
     const payload = {
       title: req.body.title,
       body: req.body.body,
+      cognitiveDistortionIds: req.body.cognitiveDistortionIds,
     };
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = generatePrompt({ body: payload.body });
+    const prompt = `
+      Here's the user journal payload:
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+      \`\`\`json
+        {
+          "userId": "${req?.user?.id}"
+          "title": "${payload.title}",
+          "body": "${payload.body}",
+          "cognitiveDistortionIds": ${JSON.stringify(
+            payload.cognitiveDistortionIds
+          )}
+        }
+      \`\`\`
 
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error("No JSON found in response");
+      1. Call **${distortionDetection}** to take the payload, analyze, breakdown and suggest a feedback
+      2. Call **${enemiesGenerationTool}** to build ${ENEMIES_AMOUNT} alternative stories in a specified enemy json format
+    `;
+
+    await addMessages([{ role: "user", content: prompt }]);
+
+    // Agent Loop Starts
+    while (true) {
+      const history = await getMessages();
+      const response = await runAIAgent({
+        messages: history,
+        tools,
+        response_format: zodResponseFormat(
+          journalOutputSchema,
+          "journal-output-schema"
+        ),
+      });
+
+      await addMessages([response]);
+
+      if (response.content) {
+        await clearMessages();
+
+        const content = JSON.parse(response?.content);
+        output["id"] = content?.id;
+        output["journalAnalysis"] = content?.journalAnalysis;
+
+        return res.json({
+          message: "Cognitive Distortion Breakdown",
+          data: { original: payload, ...output },
+        });
       }
 
-      const jsonStr = jsonMatch[0];
-      const jsonResponse = JSON.parse(jsonStr);
+      if (response.tool_calls) {
+        const toolCall = response.tool_calls[0];
+        const toolResponse = await runTool(toolCall, prompt);
+        const jsonToolResponse = JSON.parse(toolResponse);
 
-      // Basic validation of the response structure
-      if (
-        !jsonResponse.title ||
-        !jsonResponse.distortions.length ||
-        !jsonResponse.distortions[0].key ||
-        !jsonResponse.distortions[0].type ||
-        !jsonResponse.distortions[0].description
-      ) {
-        throw new Error("Invalid response structure");
+        if (
+          toolCall?.function?.name === enemiesGenerationTool &&
+          jsonToolResponse.success
+        ) {
+          output["enemies"] = jsonToolResponse?.data?.enemies;
+        }
+
+        await saveToolResponse(toolCall.id, toolResponse);
       }
-
-      res.json({ data: jsonResponse, message: "Breaking down journal" });
-    } catch (parseError) {
-      console.error("Parse error:", parseError);
-      console.error("Raw response:", text);
-
-      res
-        .status(500)
-        .json({ error: "Failed to parse the AI response. Please try again." });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(error);
+  }
+};
+
+export const getAllJournals = async (req: any, res: any, next: any) => {
+  try {
+    const player = await prisma.player.findUnique({
+      where: { id: req.user.id },
+      include: {
+        journals: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    });
+
+    if (!player) return res.status(404).json({ error: "Player not found" });
+
+    const { encryptionKey } = player;
+
+    const journals = player.journals.map((journal: any) => {
+      const {
+        id,
+        title,
+        body,
+        alternative,
+        challenge,
+        cognitiveDistortionIds,
+        encryptionMetadata,
+      } = journal;
+
+      return {
+        id,
+        cognitiveDistortionIds,
+        ...extractJournal(
+          {
+            title: {
+              data: title,
+              iv: encryptionMetadata?.title_iv,
+              authTag: encryptionMetadata?.title_authTag,
+            },
+            body: {
+              data: body,
+              iv: encryptionMetadata?.body_iv,
+              authTag: encryptionMetadata?.body_authTag,
+            },
+            alternative: {
+              data: alternative,
+              iv: encryptionMetadata?.alternative_iv,
+              authTag: encryptionMetadata?.alternative_authTag,
+            },
+            challenge: {
+              data: challenge,
+              iv: encryptionMetadata?.challenge_iv,
+              authTag: encryptionMetadata?.challenge_authTag,
+            },
+          },
+          { encryptionKey: encryptionKey! }
+        ),
+      };
+    });
+
+    return res.json({ data: journals });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const journalBatchUpdate = async (req: any, res: any, next: any) => {
+  try {
+    const { journals } = req.body;
+    const player = await prisma.player.findUnique({
+      where: { id: req.user.id },
+    });
+
+    if (!player) return res.status(404).json({ error: "Player not found" });
+
+    const operations: any[] = [];
+
+    for (const entry of journals) {
+      const {
+        id,
+        title,
+        body,
+        challenge,
+        alternative,
+        cognitiveDistortionIds,
+        _destroy,
+      } = entry;
+
+      if (_destroy && id) {
+        operations.push(prisma.journal.delete({ where: { id } }));
+        continue;
+      }
+
+      const commonData = {
+        ...buildJournalPayload(
+          {
+            title,
+            body,
+            challenge,
+            alternative,
+            cognitiveDistortionIds,
+          },
+          { encryptionKey: player?.encryptionKey! }
+        ),
+        belongsToId: req.user.id,
+      };
+
+      operations.push(
+        id ? prisma.journal.update({ where: { id }, data: commonData }) : null // handle create here if needed later
+      );
+    }
+
+    const result = await prisma.$transaction(operations.filter(Boolean));
+    return res.json({ message: "Success", data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const journalUpdate = async (req: any, res: any, next: any) => {
+  try {
+    const player = await prisma.player.findUnique({
+      where: { id: req.user.id },
+    });
+
+    if (!player) return res.status(404).json({ error: "Player not found" });
+
+    const base = buildJournalPayload(
+      {
+        title: req.body.title,
+        body: req.body.body,
+        challenge: req.body.challenge,
+        alternative: req.body.alternative,
+        cognitiveDistortionIds: req.body.cognitiveDistortionIds,
+      },
+      { encryptionKey: player?.encryptionKey! }
+    );
+
+    const updated = await prisma.journal.update({
+      where: { id: req.params.id, belongsToId: req.user.id },
+      data: {
+        ...base,
+        belongsToId: req.user.id,
+      },
+    });
+
+    return res.json({
+      message: "Cognitive Distortion Breakdown",
+      data: updated,
+    });
+  } catch (error) {
+    next(error);
   }
 };

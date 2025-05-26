@@ -8,7 +8,7 @@ import {
   PLACEMENT_TYPE_ROAMING_ENEMY,
   PLACEMENT_TYPE_FLYING_ENEMY,
   PLACEMENT_TYPE_CIABATTA,
-  PLACEMENT_TYPE_INFECTED_HERO,
+  PLACEMENT_TYPE_INFECTED,
 } from "@/constants/helpers";
 
 import progressEntry from "../../classes/progress-entry";
@@ -60,10 +60,10 @@ const showDeathType = (deathType: string) => {
           <Sprite frameCoordinate={TILES.CIABATTA_RIGHT} size={48} />
         </div>
       );
-    case PLACEMENT_TYPE_INFECTED_HERO:
+    case PLACEMENT_TYPE_INFECTED:
       return (
         <div>
-          <Sprite frameCoordinate={TILES.HERO_INFECTED_RIGHT} size={32} />
+          <Sprite frameCoordinate={TILES.INFECTED_MAN_RIGHT_1} size={32} />
         </div>
       );
     default:
@@ -72,11 +72,12 @@ const showDeathType = (deathType: string) => {
 };
 
 const DeathMessage = ({ level }) => {
-  const { setLevelId } = useGame();
+  const { levelId, setLevelId } = useGame({});
 
   const onRestartLevel = () => {
-    progressEntry.reset();
-    setLevelId("level-1");
+    setLevelId(levelId);
+    // Restart state to default
+    level?.heroRef?.state?.restart();
     level?.restart();
   };
 

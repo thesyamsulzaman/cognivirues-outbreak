@@ -2,6 +2,7 @@ import {
   PLACEMENT_TYPE_BOUND,
   PLACEMENT_TYPE_CELEBRATION,
   PLACEMENT_TYPE_CONVEYOR,
+  PLACEMENT_TYPE_DEMON_BOSS,
   PLACEMENT_TYPE_FIRE,
   PLACEMENT_TYPE_FIRE_PICKUP,
   PLACEMENT_TYPE_FLOUR,
@@ -11,7 +12,7 @@ import {
   PLACEMENT_TYPE_HERO,
   PLACEMENT_TYPE_ICE,
   PLACEMENT_TYPE_ICE_PICKUP,
-  PLACEMENT_TYPE_INFECTED_HERO,
+  PLACEMENT_TYPE_INFECTED,
   PLACEMENT_TYPE_KEY,
   PLACEMENT_TYPE_LOCK,
   PLACEMENT_TYPE_ROAMING_ENEMY,
@@ -44,8 +45,9 @@ import { SwitchableDoorPlacement } from "./game-objects/switchable-door-placemen
 import { DoorSwitchPlacement } from "./game-objects/door-switch-placement";
 import { TeleportPlacement } from "./game-objects/teleport-placement";
 import { ThiefPlacement } from "./game-objects/thief-placement";
-import { InfectedHeroPlacement } from "./game-objects/infected-hero-placement";
+import { InfectedPlacement } from "./game-objects/infected-placement";
 import { BoundPlacement } from "./game-objects/bound-placement";
+import { DemonBossPlacement } from "./game-objects/demon-boss-placement";
 
 const placementTypeClassMap = {
   [PLACEMENT_TYPE_HERO]: HeroPlacement,
@@ -69,8 +71,9 @@ const placementTypeClassMap = {
   [PLACEMENT_TYPE_SWITCH]: DoorSwitchPlacement,
   [PLACEMENT_TYPE_TELEPORT]: TeleportPlacement,
   [PLACEMENT_TYPE_THIEF]: ThiefPlacement,
-  [PLACEMENT_TYPE_INFECTED_HERO]: InfectedHeroPlacement,
+  [PLACEMENT_TYPE_INFECTED]: InfectedPlacement,
   [PLACEMENT_TYPE_BOUND]: BoundPlacement,
+  [PLACEMENT_TYPE_DEMON_BOSS]: DemonBossPlacement,
 };
 
 class PlacementFactory {

@@ -1,40 +1,40 @@
 import progressEntry from "@/classes/progress-entry";
-import Dialog, { DialogType } from "@/components/hud/dialog";
-import Journal from "@/components/ui/journal";
+import { DialogType, TextMessageDisplay } from "@/components/hud/dialog";
+import Journal from "@/components/ui/journaling";
 import OnboardingPopup from "@/components/ui/onboarding-popup";
-import { TUTORIAL_DIALOGS } from "@/constants/dialogs";
+import { CATCH_UP_DIALOGS, TUTORIAL_DIALOGS } from "@/constants/content";
 import useGetTittle from "@/hooks/queries/use-get-title";
+import { Button } from "@mantine/core";
+import { noop } from "lodash";
 
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MainMenu = () => {
-  // const navigate = useRouter();
-  const { data } = useGetTittle();
+  const navigate = useNavigate();
+  const { isSuccess } = useGetTittle();
   const timeoutRef = useRef<any>(null);
 
   const [screen, setScreen] = useState("main-menu");
-  const [dialogs, setDialogs] = useState(TUTORIAL_DIALOGS);
   const [announcerMessage, setAnnouncerMessage] = useState("");
 
   const MENU = [
     {
-      title: "Mulai Permainan",
-      onClick: () => setScreen("onboarding-popup"),
+      id: "start-game",
+      title: "Start Game",
+      color: "blue",
+      onClick: () => setScreen("onboarding"),
     },
-    // ...(progressEntry?.get()?.checkpoint
-    //   ? [
-    //       {
-    //         title: "Lanjutkan Permainan",
-    //         onClick: () => {
-    //           journalEntry.hasWroteToday()
-    //             ? // ? navigate.push("/game")
-    //               null
-    //             : setScreen("journaling");
-    //         },
-    //       },
-    //     ]
-    //   : []),
-    { title: "Keluar Permainan", onClick: () => window.close() },
+    ...(progressEntry.get().hasCompletedTutorial
+      ? [
+          {
+            id: "continue-game",
+            title: "Continue Game",
+            color: "blue",
+            onClick: () => setScreen("catch-up"),
+          },
+        ]
+      : []),
   ];
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const MainMenu = () => {
     <div
       className="w-full h-screen"
       style={{
-        backgroundImage: `url(/bg-menu.jpg)`,
+        backgroundImage: `url(/bg-battle-grayish.jpg)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         imageRendering: "pixelated",
@@ -62,56 +62,60 @@ const MainMenu = () => {
       <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
         {screen === "main-menu" && (
           <div className="flex flex-col">
-            {data?.title && (
+            {isSuccess && (
               <h1 className="text-8xl font-bold text-center mb-8">
                 Cognivirues <br />{" "}
                 <span className="text-red-500">Outbreak</span>
               </h1>
             )}
 
-            {MENU.map((option, idx) => (
-              <button
-                key={idx}
-                className="option flex items-center justify-center hover:bg-orange-500 p-4 rounded-md cursor-pointer bg-red-500 text-white text-2xl my-4"
-                onClick={option?.onClick}
-              >
-                {option?.title}
-              </button>
-            ))}
+            <div className="flex flex-col space-y-4">
+              {MENU.map((option) => (
+                <Button
+                  key={option.id}
+                  onClick={option?.onClick}
+                  size="lg"
+                  color={option.color}
+                >
+                  {option?.title}
+                </Button>
+              ))}
+            </div>
           </div>
         )}
 
-        {screen === "tutorial" && (
-          <Dialog
-            isOpen={!!dialogs.length}
-            onClose={() => {}}
-            onComplete={() => {
-              if (dialogs.length === 1) {
-                setScreen("journaling");
-                progressEntry.save({ hasCompletedTutorial: true });
-              }
-
-              setDialogs(dialogs?.slice(1));
-            }}
+        {(screen === "tutorial" || screen === "catch-up") && (
+          <TextMessageDisplay
+            onComplete={() => setScreen("journaling")}
             leftSection={
               <div className="w-1/5">
                 <img
-                  src="https://img.itch.zone/aW1nLzExNzY3NzEyLnBuZw==/original/zOww4a.png"
-                  alt="Ciabatta"
+                  src="./character.png"
+                  alt="Peter"
                   className="-mt-14 w-[300px]"
                 />
               </div>
             }
-            content={dialogs as DialogType}
+            content={
+              (screen === "catch-up"
+                ? CATCH_UP_DIALOGS
+                : TUTORIAL_DIALOGS) as DialogType
+            }
           />
         )}
 
-        {screen === "onboarding-popup" && (
-          <OnboardingPopup isOpen onClose={() => setScreen("tutorial")} />
+        {screen === "onboarding" && (
+          <OnboardingPopup
+            isOpen
+            onClose={() => {
+              progressEntry.save({ hasCompletedTutorial: true });
+              setScreen("tutorial");
+            }}
+          />
         )}
 
         {screen === "journaling" && (
-          <Journal isOpen onClose={() => {}} onSave={() => {}} />
+          <Journal isOpen onClose={noop} onFinish={() => navigate("/game")} />
         )}
       </div>
     </div>

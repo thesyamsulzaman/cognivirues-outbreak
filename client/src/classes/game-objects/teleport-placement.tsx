@@ -1,7 +1,11 @@
 import { TILES } from "@/constants/tiles";
 import Sprite from "../../components/object-graphics/sprite";
 import Placement from "../placement";
-import { BODY_SKINS, PLACEMENT_TYPE_TELEPORT } from "@/constants/helpers";
+import {
+  BODY_SKINS,
+  Direction,
+  PLACEMENT_TYPE_TELEPORT,
+} from "@/constants/helpers";
 
 export class TeleportPlacement extends Placement {
   changesHeroSkinOnCollide(): string | null {
@@ -30,6 +34,11 @@ export class TeleportPlacement extends Placement {
   }
 
   renderComponent(): JSX.Element | null {
-    return <Sprite frameCoordinate={TILES.TELEPORT1} />;
+    const frame = this?.level?.animatedFrames?.getFrame(
+      PLACEMENT_TYPE_TELEPORT,
+      Direction.Right
+    );
+
+    return <Sprite frameCoordinate={frame} />;
   }
 }

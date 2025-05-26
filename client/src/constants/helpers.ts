@@ -1,5 +1,6 @@
 export const CELL_SIZE = 16;
-export const SPRITESHEET_IMAGE_SRC = "/ciabattas-revenge-sprites.png";
+// export const SPRITESHEET_IMAGE_SRC = "/ciabattas-revenge-sprites.png";
+export const SPRITESHEET_IMAGE_SRC = "/ciabattas-revenge-sprites-v5.png";
 export const Z_INDEX_LAYER_SIZE = 10;
 
 export const PLACEMENT_TYPE_HERO = "HERO";
@@ -22,7 +23,7 @@ export const PLACEMENT_TYPE_GROUND_ENEMY = "GROUND_ENEMY";
 export const PLACEMENT_TYPE_FLYING_ENEMY = "FLYING_ENEMY";
 export const PLACEMENT_TYPE_ROAMING_ENEMY = "ROAMING_ENEMY";
 export const PLACEMENT_TYPE_CIABATTA = "CIABATTA";
-export const PLACEMENT_TYPE_INFECTED_HERO = "INFECTED_HERO";
+export const PLACEMENT_TYPE_DEMON_BOSS = "DEMON_BOSS";
 export const PLACEMENT_TYPE_BLANK = "BLANK";
 
 export const PLACEMENT_TYPE_SWITCH_DOOR = "SWITCH_DOOR";
@@ -33,6 +34,10 @@ export const PLACEMENT_TYPE_BOUND_LEFT = "BOUND_LEFT";
 export const PLACEMENT_TYPE_BOUND_RIGHT = "BOUND_RIGHT";
 export const PLACEMENT_TYPE_BOUND_BOTTOM = "BOUND_BOTTOM";
 export const PLACEMENT_TYPE_BOUND_TOP = "BOUND_TOP";
+
+export const PLACEMENT_TYPE_INFECTED = "INFECTED";
+export const PLACEMENT_TYPE_INFECTED_MAN = "INFECTED_MAN";
+export const PLACEMENT_TYPE_INFECTED_WOMAN = "INFECTED_WOMAN";
 
 export const BODY_SKINS = {
   NORMAL: "NORMAL",
@@ -47,6 +52,8 @@ export const BODY_SKINS = {
 
 export const HERO_RUN_1 = "HERO_RUN_1";
 export const HERO_RUN_2 = "HERO_RUN_2";
+export const DEMON_BOSS_ROAMING_LEFT = "DEMON_BOSS_ROAMING_LEFT";
+export const DEMON_BOSS_ROAMING_RIGHT = "DEMON_BOSS_ROAMING_RIGHT";
 
 export enum LevelThemes {
   Yellow = "YELLOW",
@@ -76,11 +83,11 @@ export const LOCK_KEY_COLORS = {
 };
 
 export const THEME_BACKGROUNDS = {
-  [LevelThemes.Yellow]: "#2f2808",
-  [LevelThemes.Blue]: "#3d4c67",
-  [LevelThemes.Green]: "#2f2808",
-  [LevelThemes.Pink]: "#673d5e",
-  [LevelThemes.Gray]: "#96a1c7",
+  [LevelThemes.Yellow]: "#1E1D39",
+  [LevelThemes.Pink]: "#222222",
+  [LevelThemes.Blue]: "#32DCE8",
+  [LevelThemes.Green]: "#32DCE8",
+  [LevelThemes.Gray]: "#1C1018",
 };
 
 export const THEME_BATTLE_SCREENS = {

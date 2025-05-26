@@ -1,37 +1,40 @@
 import { TILES } from "@/constants/tiles";
 import Body from "../../components/object-graphics/body";
-import { Direction, PLACEMENT_TYPE_HERO } from "@/constants/helpers";
+import {
+  Direction,
+  PLACEMENT_TYPE_GROUND_ENEMY,
+  PLACEMENT_TYPE_HERO,
+} from "@/constants/helpers";
 import { BodyPlacement } from "./body-placement";
 import soundManager, { SFX } from "../sounds";
-import progressEntry from "../progress-entry";
 
 export class GroundEnemyPlacement extends BodyPlacement {
   tickBetweenMovesInterval: number;
   ticksUntilNextMove: number;
   turnAroundAtWater: boolean;
-  attackDamage: number;
   interactWithGround: boolean;
-  throwDamagesInFrame: number;
+  damageFrames: number;
+  heroPainFramesRemaining: number;
 
   constructor(properties, level) {
     super(properties, level);
-    this.attackDamage = 20;
     this.tickBetweenMovesInterval = 16;
     this.ticksUntilNextMove = this.tickBetweenMovesInterval;
     this.turnAroundAtWater = true;
     this.movingPixelDirection = properties.initialDirection ?? Direction.Right;
     this.interactWithGround = true;
+    this.heroPainFramesRemaining = 0;
 
-    this.throwDamagesInFrame = 0;
+    this.damageFrames = 0;
   }
 
   tickAttemptAiMove() {
     this.checkOverlapWithHero();
-
     if (this.ticksUntilNextMove > 0) {
       this.ticksUntilNextMove -= 1;
       return;
     }
+
     this.internalMoveRequested(this.movingPixelDirection);
   }
 
@@ -43,43 +46,22 @@ export class GroundEnemyPlacement extends BodyPlacement {
     const yDiff = Math.abs(myY - heroY);
 
     if (xDiff <= 2 && yDiff <= 2) {
-      this.throwDamages();
-      if (this.level.heroRef.stats.health <= 0) {
-        progressEntry.reset();
-
-        soundManager.playSFX(SFX.GAME_OVER);
-        this.level.setDeathOutcome(this.type);
-      }
-    }
-  }
-
-  throwDamages() {
-    if (this.throwDamagesInFrame > 0) {
-      return;
-    }
-    this.throwDamagesInFrame = 11;
-  }
-
-  acceptingDamage() {
-    if (this.throwDamagesInFrame > 0) {
-      this.throwDamagesInFrame -= 1;
-      if (this.throwDamagesInFrame === 0) {
-        progressEntry.save({
-          stats: {
-            ...this.level.heroRef.stats,
-            health: this.level.heroRef.stats.health - 30,
-          },
-        });
-
-        this.level.heroRef.stats.health -= 30;
-        soundManager.playSFX(SFX.DAMAGE);
-      }
+      this.level?.heroRef?.initiatePainFrames();
     }
   }
 
   tick(): void {
     super.tick();
-    this.acceptingDamage();
+
+    if (this.level.heroRef.painFramesRemaining > 0) {
+      this.level.heroRef.painFramesRemaining -= 1;
+
+      if (this.level.heroRef.painFramesRemaining === 0) {
+        this.level?.heroRef?.takesDamage(this.type);
+      }
+
+      return;
+    }
   }
 
   internalMoveRequested(direction: Direction) {
@@ -123,10 +105,10 @@ export class GroundEnemyPlacement extends BodyPlacement {
   }
 
   renderComponent(): JSX.Element | null {
-    const frameCoordinate =
-      this.spriteFacingDirection === Direction.Left
-        ? TILES.ENEMY_LEFT
-        : TILES.ENEMY_RIGHT;
+    const frameCoordinate = this.level?.animatedFrames?.getFrame(
+      PLACEMENT_TYPE_GROUND_ENEMY,
+      this.spriteFacingDirection
+    );
 
     return (
       <Body

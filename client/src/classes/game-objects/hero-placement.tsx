@@ -1,19 +1,18 @@
+// @ts-nocheck
 import { TILES } from "@/constants/tiles";
-import Sprite from "../../components/object-graphics/sprite";
-import Placement from "../placement";
 import Body from "../../components/object-graphics/body";
 import {
   BODY_SKINS,
   Direction,
   HERO_RUN_1,
   HERO_RUN_2,
-  PLACEMENT_TYPE_CELEBRATION,
+  PLACEMENT_TYPE_GROUND_ENEMY,
   Z_INDEX_LAYER_SIZE,
-  directionUpdateMap,
 } from "@/constants/helpers";
-import { Collision } from "../collision";
 import { BodyPlacement } from "./body-placement";
-import progressEntry from "../progress-entry";
+import soundManager, { SFX } from "../sounds";
+import { HeroState } from "../hero-state";
+import { noop } from "lodash";
 
 const heroSkinMap = {
   [BODY_SKINS.NORMAL]: [TILES.HERO_LEFT, TILES.HERO_RIGHT],
@@ -26,7 +25,7 @@ const heroSkinMap = {
   [BODY_SKINS.ICE]: [TILES.HERO_ICE_LEFT, TILES.HERO_ICE_RIGHT],
   [BODY_SKINS.TELEPORT]: [TILES.HERO_TELEPORT_LEFT, TILES.HERO_TELEPORT_RIGHT],
   [HERO_RUN_1]: [TILES.HERO_RUN_1_LEFT, TILES.HERO_RUN_1_RIGHT],
-  [HERO_RUN_2]: [TILES.HERO_RUN_2_LEFT, TILES.HERO_RUN_2_RIGHT],
+  [HERO_RUN_2]: [TILES.HERO_RUN_3_LEFT, TILES.HERO_RUN_3_RIGHT],
 };
 
 class HeroPlacement extends BodyPlacement {
@@ -34,42 +33,63 @@ class HeroPlacement extends BodyPlacement {
   canCompleteLevel: boolean;
   interactWithGround: boolean;
   canStartBattle: boolean;
-  stats: {
-    name: string;
-    health: number;
-    level: number;
-  };
+  painFramesRemaining: number;
+  state: HeroState;
+  canTriggerDialog: boolean;
 
   constructor(properties, level) {
     super(properties, level);
     this.canCollectItem = true;
     this.canStartBattle = true;
     this.canCompleteLevel = true;
+    this.canTriggerDialog = true;
     this.interactWithGround = true;
+    this.painFramesRemaining = 0;
 
-    this.stats = progressEntry.get().stats
-      ? progressEntry.get().stats
-      : {
-          name: "Peter",
-          health: 100,
-          level: 1,
-        };
+    this.state = new HeroState();
   }
 
-  controllerMoveRequested(direction: Direction) {
+  damagesBodyOnCollide(_body: any): any {
+    if (_body.type === PLACEMENT_TYPE_GROUND_ENEMY) {
+      return this.type;
+    }
+
+    return null;
+  }
+
+  async controllerMoveRequested(direction: Direction) {
     if (this.movingPixelsRemaining > 0) {
       return;
     }
 
     /**
+     * Custscenes
+     */
+    const dialog = this.getDialogAtPosition(direction);
+
+    if (dialog?.cutscene) {
+      this.level
+        .startCutScene(dialog?.cutscene)
+        .then(() => {
+          this.level.deleteDialog({ x: dialog?.x, y: dialog?.y });
+        })
+        .catch(noop);
+    }
+
+    /**
      * Start Battle Scene
      */
-    const faceToFaceEnemy = this.getInfectedHeroAtNextPosition(direction);
+    const faceToFaceEnemy = this.getInfectedAtNextPosition(direction);
     if (faceToFaceEnemy) {
-      this.level.initializeBattle({
-        player: this,
-        opponent: faceToFaceEnemy,
-      });
+      const intro = faceToFaceEnemy.state.intro;
+
+      this.level.startCutScene([
+        ...intro,
+        {
+          type: "battle",
+          enemy: faceToFaceEnemy,
+        },
+      ]);
     }
 
     /**
@@ -97,8 +117,28 @@ class HeroPlacement extends BodyPlacement {
     this.controllerMoveRequested(_direction);
   }
 
+  initiatePainFrames() {
+    const PAIN_FRAMES_LENGTH = 16;
+    this.painFramesRemaining = PAIN_FRAMES_LENGTH;
+  }
+
+  takesDamage(type: string): null {
+    this.state.update({
+      hp: this.state.hp - 15 <= 0 ? 0 : this.state.hp - 15,
+    });
+    soundManager.playSFX(SFX.DAMAGE);
+
+    if (this.state.hp <= 0) {
+      this.level.setDeathOutcome(type);
+    }
+  }
+
   getFrame() {
     const index = this.spriteFacingDirection === Direction.Left ? 0 : 1;
+
+    if (this.painFramesRemaining > 0) {
+      return heroSkinMap[BODY_SKINS.DEATH][index];
+    }
 
     if (this.level.deathOutcome) {
       return heroSkinMap[BODY_SKINS.DEATH][index];
@@ -124,11 +164,7 @@ class HeroPlacement extends BodyPlacement {
     const shouldShowShadow = this.skin !== BODY_SKINS.WATER;
 
     return (
-      <Body
-        frameCoordinate={this.getFrame()}
-        yTranslate={this.getYTranslate()}
-        showShadow={shouldShowShadow}
-      />
+      <Body frameCoordinate={this.getFrame()} showShadow={shouldShowShadow} />
     );
   }
 }

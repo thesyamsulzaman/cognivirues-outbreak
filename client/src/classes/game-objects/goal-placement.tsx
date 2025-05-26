@@ -4,6 +4,13 @@ import Placement from "../placement";
 import { PLACEMENT_TYPE_FLOUR } from "@/constants/helpers";
 
 class GoalPlacement extends Placement {
+  asPortal: boolean;
+
+  constructor(properties, level) {
+    super(properties, level);
+    this.asPortal = properties.asPortal ?? false;
+  }
+
   get isDisabled() {
     const nonCollectedFlour = this.level.placements.find((placement) => {
       return (
@@ -23,13 +30,15 @@ class GoalPlacement extends Placement {
   }
 
   renderComponent() {
-    return (
-      <Sprite
-        frameCoordinate={
-          this.isDisabled ? TILES.GOAL_DISABLED : TILES.GOAL_ENABLED
-        }
-      />
-    );
+    const portalFrame = this.isDisabled
+      ? TILES.PORTAL_DISABLED
+      : TILES.PORTAL_ENABLED;
+
+    const goalFrame = this.isDisabled
+      ? TILES.GOAL_DISABLED
+      : TILES.GOAL_ENABLED;
+
+    return <Sprite frameCoordinate={this.asPortal ? portalFrame : goalFrame} />;
   }
 }
 

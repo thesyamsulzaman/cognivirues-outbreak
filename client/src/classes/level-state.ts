@@ -5,7 +5,7 @@ import {
   PLACEMENT_TYPE_FLOUR,
   PLACEMENT_TYPE_GOAL,
   PLACEMENT_TYPE_HERO,
-  PLACEMENT_TYPE_INFECTED_HERO,
+  PLACEMENT_TYPE_INFECTED,
   PLACEMENT_TYPE_ROAMING_ENEMY,
   PLACEMENT_TYPE_WALL,
   THEME_TILES_MAP,
@@ -22,9 +22,13 @@ import { Battle } from "./battle";
 import { DialogEvent } from "./dialog-event";
 import progressEntry from "./progress-entry";
 import { noop } from "lodash";
-import generateBackgroundTiles, {
-  Tile,
-} from "@/utils/generate-background-tiles";
+import { Tile } from "@/utils/generate-background-tiles";
+import { Disclosure } from "./disclosure";
+import { GameEvent } from "./game-event";
+import { TextMessage } from "./text-message";
+import unionBy from "lodash/unionBy";
+import { TILES } from "@/constants/tiles";
+import { mergeByXY } from "@/utils/common";
 
 interface Placement {
   id: number;
@@ -43,6 +47,9 @@ export type EditModeType<EditMode> = EditMode[keyof EditMode];
 
 interface StateParams {
   levelId: keyof typeof levels;
+  journals: any[];
+  enemies: any;
+  dialogs: any;
   editMode?: EditModeType<typeof EditMode>;
   onEmit: (data: any) => void;
 }
@@ -59,13 +66,12 @@ export interface LevelStateData {
   cameraTransformY: string;
   inventory: any;
   heroRef?: any;
-  battle?: any;
+  battle: Battle | undefined;
   custscenes?: Array<{ type: string; text: string }>;
   clearCutscene: () => void;
-  restart: () => void;
   editMode?: EditModeType<typeof EditMode>;
   setEditMode?: (editMode) => void;
-  editModePlacement: string;
+  editModePlacement: any;
   editModeTile: any | undefined;
   [properties: string]: any;
 }
@@ -73,6 +79,7 @@ export interface LevelStateData {
 class LevelState {
   id: keyof typeof levels | undefined;
   onEmit: (data: any) => void;
+  journals: any[];
   directionsControls: DirectionControls;
   theme: LevelThemes | undefined;
   tilesWidth: number | undefined;
@@ -88,16 +95,51 @@ class LevelState {
   animatedFrames: LevelAnimatedFrames | undefined;
   camera: Camera | undefined;
   battle: Battle | undefined;
-  cutscenes: Array<{ type: string; text: string }> | undefined;
   editModePlacement: any;
   editModeTile: any | undefined;
   editMode?: EditModeType<typeof EditMode>;
+  manageJournalsScreen: Disclosure;
+  cutScenes: Disclosure;
+  textMessage: TextMessage | undefined;
+  enemies: any;
+  dialogs: any;
 
-  constructor({ levelId, onEmit, editMode }: StateParams) {
+  constructor({
+    levelId,
+    onEmit,
+    editMode,
+    journals,
+    enemies,
+    dialogs,
+  }: StateParams) {
     this.id = levelId;
+    this.journals = journals;
+    this.enemies = enemies;
+    this.dialogs = dialogs;
     this.onEmit = onEmit;
     this.directionsControls = new DirectionControls();
-    // this.tiles = [];
+
+    // Journal modal
+    this.cutScenes = new Disclosure(false, {
+      onOpen: () => {
+        setTimeout(() => {
+          this.gameLoop.pause();
+        }, 500);
+      },
+      onClose: () => {
+        this.gameLoop.continue();
+      },
+    });
+
+    // Journal modal
+    this.manageJournalsScreen = new Disclosure(false, {
+      onOpen: () => {
+        this.gameLoop.pause();
+      },
+      onClose: () => {
+        this.gameLoop.continue();
+      },
+    });
 
     /**
      * EDIT MODE
@@ -114,39 +156,26 @@ class LevelState {
 
   start(): void {
     const level = levels[this.id!];
+    const placements = [...level.placements, ...this.enemies];
+    const tiles = mergeByXY(level.tiles, this.dialogs);
 
     this.isCompleted = false;
     this.deathOutcome = null;
 
-    this.theme = level.theme;
+    this.theme = level.theme as LevelThemes;
     this.tilesWidth = level.tilesWidth;
     this.tilesHeight = level.tilesHeight;
-    this.tiles = level.tiles;
+    this.tiles = tiles;
 
-    if (this.editMode !== EditMode.NONE) {
-      this.tiles = generateBackgroundTiles({
-        theme: level.theme,
-        tilesHeight: level.tilesHeight,
-        tilesWidth: level.tilesWidth,
-      });
-    }
-    // this.tiles = level.tiles;
-
-    this.placements = level.placements?.map((config) =>
+    this.placements = placements?.map((config) =>
       placementFactory.createPlacement(config, this)
     );
 
     this.inventory = new Inventory();
-    this.cutscenes = [];
 
     this.heroRef = this.placements.find(
       (placement) => placement.type === PLACEMENT_TYPE_HERO
     );
-
-    /**
-     * Create a battle
-     */
-    this.battle = new Battle();
 
     /**
      * Create a camera
@@ -161,15 +190,43 @@ class LevelState {
     this.startGameLoop();
   }
 
+  async startCutScene(events: any[]) {
+    this.cutScenes.open();
+
+    for (const event of events) {
+      const eventHandler = new GameEvent(this, event);
+      await eventHandler.init();
+    }
+
+    this.cutScenes.close();
+  }
+
   startGameLoop() {
     this.gameLoop?.stop();
-    this.gameLoop = new GameLoop(() => {
-      this.tick();
-    });
+    this.gameLoop = new GameLoop(
+      () => {
+        this.tick();
+      },
+      // Force render when hit pause
+      () => {
+        this.onEmit(this.getState());
+      }
+    );
   }
 
   addPlacement(config: any) {
     this.placements?.push(placementFactory.createPlacement(config, this));
+  }
+
+  updateJournals(journals: Array<any>) {
+    this.journals = journals;
+    this.onEmit(this.getState());
+  }
+
+  deleteDialog({ x, y }) {
+    this.tiles = this.tiles?.map((tile) =>
+      tile?.x === x && tile?.y === y ? { ...tile, cutscene: null } : tile
+    );
   }
 
   replaceTile(newTile: Tile) {
@@ -200,10 +257,11 @@ class LevelState {
 
   copyPlacementsToClipboard() {
     const level = {
+      theme: this.theme,
       tilesHeight: this.tilesHeight,
       tilesWidth: this.tilesWidth,
       tiles: this.tiles,
-      placements: this?.placements.map((p) => ({
+      placements: this?.placements?.map((p) => ({
         type: p.type,
         x: p.x,
         y: p.y,
@@ -240,11 +298,7 @@ class LevelState {
 
     this?.camera?.tick();
 
-    // // emit changes
-    this.onEmit(this.getState());
-  }
-
-  forceRender() {
+    // emit changes
     this.onEmit(this.getState());
   }
 
@@ -252,6 +306,7 @@ class LevelState {
     /**
      * The bound is any wall
      */
+    // TODO
     /**
      * The bound is the outer edge
      */
@@ -275,22 +330,31 @@ class LevelState {
       cameraTransformX: this?.camera?.transformX!,
       cameraTransformY: this?.camera?.transformY!,
       inventory: this.inventory,
-
-      /**
-       * BATTLE CUSTOMIZATION
-       */
-      heroRef: this?.heroRef,
-      custscenes: this.cutscenes,
-      clearCutscene: () => this.clearCutscene(),
-      battle: {
-        instance: this?.battle,
-        isOpen: this.battle?.isOpen || false,
-        onComplete: (winner: any) => this.onBattleCompleted(winner),
-      },
       restart: () => {
         this.start();
       },
-
+      /**
+       * Dialogs
+       */
+      dialogs: this.dialogs,
+      deleteDialog: this.deleteDialog.bind(this),
+      /**
+       * Cut Scenes
+       */
+      cutScenes: this.cutScenes,
+      startCutScene: this.startCutScene.bind(this),
+      textMessage: this.textMessage,
+      /**
+       * JOURNAL MANAGEMENT
+       */
+      journals: this.journals,
+      manageJournalsScreen: this.manageJournalsScreen,
+      updateJournals: this.updateJournals.bind(this),
+      /**
+       * BATTLE MODE
+       */
+      battle: this.battle,
+      heroRef: this?.heroRef,
       /**
        * Editing Mode
        */
@@ -318,7 +382,7 @@ class LevelState {
       placement?.resetHasBeenCollected();
     });
 
-    this.inventory.clear();
+    this?.inventory?.clear();
   }
 
   switchAllDoors() {
@@ -329,44 +393,12 @@ class LevelState {
     });
   }
 
-  addCutscene(cutscenes) {
-    this.cutscenes = cutscenes;
-    this.gameLoop?.pause();
-  }
-
-  clearCutscene() {
-    this.cutscenes = [];
-    this.forceRender();
-  }
-
-  initializeBattle({ player, opponent }) {
-    this.gameLoop?.pause();
-    this.battle?.init({ player, opponent });
-  }
-
-  onBattleCompleted(result) {
-    if (result?.opponent?.health === 0) {
-      this.battle?.stop();
-      this.battle?.combatans?.opponent?.defeated();
-      this.heroRef.stats = result?.player;
-
-      progressEntry.save({ stats: result?.player });
-      this.gameLoop.continue();
-    }
-
-    if (result?.player?.health === 0) {
-      this.battle?.stop();
-      progressEntry.reset();
-
-      this.setDeathOutcome(PLACEMENT_TYPE_INFECTED_HERO);
-      soundManager.playSFX(SFX.GAME_OVER);
-      this.forceRender();
-    }
-  }
-
   setDeathOutcome(causeOfDeath: any) {
     this.deathOutcome = causeOfDeath;
-    this.gameLoop.stop();
+
+    if (this.gameLoop.isRunning) {
+      this.gameLoop.stop();
+    }
   }
 
   completeLevel() {

@@ -1,12 +1,7 @@
-import RenderLevel from "@/components/level-layout/render-level";
-import GameProvider from "@/contexts/game";
+import RenderGame from "@/components/level-layout/render-game";
 
 const GameEditor = () => {
-  return (
-    <GameProvider isEditing>
-      <RenderLevel />
-    </GameProvider>
-  );
+  return <RenderGame isEditing />;
 };
 
 export default GameEditor;

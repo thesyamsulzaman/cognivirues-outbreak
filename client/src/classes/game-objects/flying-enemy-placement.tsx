@@ -2,7 +2,7 @@ import { TILES } from "@/constants/tiles";
 import Sprite from "../../components/object-graphics/sprite";
 import Placement from "../placement";
 import Body from "../../components/object-graphics/body";
-import { Direction } from "@/constants/helpers";
+import { Direction, PLACEMENT_TYPE_FLYING_ENEMY } from "@/constants/helpers";
 import { BodyPlacement } from "./body-placement";
 import { GroundEnemyPlacement } from "./ground-enemy-placement";
 
@@ -20,10 +20,10 @@ export class FlyingEnemyPlacement extends GroundEnemyPlacement {
   }
 
   renderComponent(): JSX.Element | null {
-    const frameCoordinate =
-      this.spriteFacingDirection === Direction.Left
-        ? TILES.ENEMY_FLYING_LEFT
-        : TILES.ENEMY_FLYING_RIGHT;
+    const frameCoordinate = this.level?.animatedFrames?.getFrame(
+      PLACEMENT_TYPE_FLYING_ENEMY,
+      this.spriteFacingDirection
+    );
 
     return (
       <Body

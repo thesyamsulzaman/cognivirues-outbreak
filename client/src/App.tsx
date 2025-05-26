@@ -1,5 +1,4 @@
 import { Loader } from "@mantine/core";
-import { Fragment } from "react";
 import {
   Navigate,
   Outlet,
@@ -14,27 +13,28 @@ import NotFound from "./routes/not-found";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import useProfile from "./hooks/queries/use-get-profile";
 import GameEditor from "./routes/game-editor";
+import GameProvider from "./contexts/game";
 
 const RouteProtection = () => {
   const { isLoading, isError } = useProfile();
 
-  // if (isError) {
-  //   return <Navigate to="/auth/login" />;
-  // }
+  if (isError) {
+    return <Navigate to="/auth/login" />;
+  }
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="h-screen w-screen flex flex-col items-center justify-center">
-  //       <h1 className="text-3xl font-semibold">Please wait ...</h1>
-  //       <Loader size="xl" type="dots" color="#8960AF" />
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center">
+        <h1 className="text-3xl font-semibold">Please wait ...</h1>
+        <Loader size="xl" type="dots" color="#8960AF" />
+      </div>
+    );
+  }
 
   return (
-    <Fragment>
+    <GameProvider>
       <Outlet />
-    </Fragment>
+    </GameProvider>
   );
 };
 
@@ -56,7 +56,7 @@ const App = () => {
         <Route element={<RouteProtection />}>
           <Route path="/" element={<MainMenu />} />
           <Route path="/game" element={<Game />} />
-          <Route path="/game-editor" element={<GameEditor />} />
+          {/* <Route path="/game-editor" element={<GameEditor />} /> */}
         </Route>
       </Routes>
     </Router>

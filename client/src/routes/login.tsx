@@ -9,6 +9,7 @@ import GoogleLogo from "@/assets/icons/google-logo.svg";
 import useSocialAuth from "@/hooks/use-social-auth";
 import { useEffect } from "react";
 import useQueryParams from "@/hooks/use-query-params";
+import { api, setCookie } from "@/utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,11 +19,7 @@ const Login = () => {
   const loginMutation = useMutation({
     mutationKey: ["login"],
     mutationFn: async (loginData) => {
-      // const response: any = await api().post(
-      //   "/api/v1/admin/auth/login/",
-      //   loginData
-      // );
-      const response: any = null;
+      const response: any = await api().post("/auth/login", loginData);
 
       if (!response.ok) {
         throw new Error(response?.data?.message);
@@ -39,10 +36,9 @@ const Login = () => {
   const onSubmit = (loginData) => {
     loginMutation.mutate(loginData, {
       onSuccess: (response) => {
-        const token = response?.data?.token?.token;
-
-        // setProfile(response?.data?.user);
-        navigate("/overview");
+        const token = response?.token;
+        setCookie(import.meta.env.VITE_COOKIE_TOKEN as string, token);
+        navigate("/");
       },
       onError: (error) => {
         methods.setError("root", { type: "custom", message: error.message });
@@ -54,11 +50,7 @@ const Login = () => {
     const token = queryParams.get("token");
 
     if (token) {
-      JSCookie.set(import.meta.env.VITE_COOKIE_TOKEN as string, token, {
-        domain: import.meta.env.VITE_COOKIE_DOMAIN,
-        expires: 365 * 100,
-      });
-
+      setCookie(import.meta.env.VITE_COOKIE_TOKEN as string, token);
       navigate("/");
     }
   }, [navigate, queryParams]);
@@ -67,7 +59,7 @@ const Login = () => {
     <div className="w-full">
       <div className="max-w-[600px] mx-auto min-h-[800px] py-4 flex justify-center items-center">
         <div className="w-full">
-          <h1 className="text-8xl font-bold text-center">
+          <h1 className="text-8xl font-bold text-center mb-5">
             Cognivirues <br /> <span className="text-red-500">Outbreak</span>
           </h1>
 
@@ -77,12 +69,8 @@ const Login = () => {
               method="POST"
               onSubmit={methods.handleSubmit(onSubmit)}
             >
-              <div className="flex flex-col justify-center items-center mb-12">
-                {/* <img className="h-[50px] w-[200px]" src={Logo} alt="Logo" /> */}
-              </div>
-
               {!!methods?.formState?.errors?.root?.message && (
-                <div className="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50">
+                <div className="flex items-center p-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50">
                   <svg
                     className="flex-shrink-0 inline w-4 h-4 me-3"
                     aria-hidden="true"
@@ -108,11 +96,13 @@ const Login = () => {
                   </label>
 
                   <TextInput
-                    name="email"
                     placeholder="Enter email address"
                     type="email"
                     id="signin-email"
-                    // rules={{ required: 'Email field is required' }}
+                    error={methods.formState.errors.email?.message}
+                    {...methods.register("email", {
+                      required: "Email field is required",
+                    })}
                   />
                 </div>
 
@@ -122,11 +112,13 @@ const Login = () => {
                   </label>
 
                   <TextInput
-                    name="password"
                     placeholder="*****"
                     type="password"
                     id="signin-password"
-                    // rules={{ required: "Please fill in password" }}
+                    error={methods.formState.errors.password?.message}
+                    {...methods.register("password", {
+                      required: "Please fill in password",
+                    })}
                   />
                 </div>
               </div>
@@ -159,7 +151,7 @@ const Login = () => {
                   radius="lg"
                   onClick={loginWithGoogle}
                 >
-                  <span> SIGN IN WITH GOOGLE</span>
+                  <span> TRY THIS GAME WITH GOOGLE ACCOUNT</span>
                 </Button>
               </div>
             </form>

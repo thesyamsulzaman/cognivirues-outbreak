@@ -1,4 +1,4 @@
-import prisma from "../db";
+import prisma from "../libs/db";
 
 // Get all
 export const getInventories = async (req: any, res: any, next: any) => {

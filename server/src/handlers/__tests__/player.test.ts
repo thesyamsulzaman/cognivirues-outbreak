@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../index";
-import prisma from "../../db";
+import prisma from "../../libs/db";
 import jwt from "jsonwebtoken";
 import { hashPassword } from "../../utils/auth";
 

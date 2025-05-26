@@ -1,60 +1,47 @@
 import { EditMode } from "@/classes/level-state";
 import Sprite from "../object-graphics/sprite";
-import {
-  CELL_SIZE,
-  LevelThemes,
-  PLACEMENT_TYPE_BOUND,
-  THEME_TILES_MAP,
-} from "@/constants/helpers";
+import { CELL_SIZE, LevelThemes, THEME_TILES_MAP } from "@/constants/helpers";
 
 const MapCell = ({ x, y, level, frameCoordinate }) => {
   const themeTiles = THEME_TILES_MAP[level?.theme as LevelThemes];
 
-  const edges =
+  const isEdgeTile =
     frameCoordinate === themeTiles.LEFT ||
     frameCoordinate === themeTiles.RIGHT ||
     frameCoordinate === themeTiles.TOP ||
     frameCoordinate === themeTiles.BOTTOM;
 
-  const onCellClick = () => {
-    if (level.editMode === EditMode.PLACEMENT && !edges) {
+  const handlePlacement = () => {
+    if (level.editMode === EditMode.PLACEMENT && !isEdgeTile) {
       level.addPlacement({
-        x: x,
-        y: y,
+        x,
+        y,
         ...level.editModePlacement,
       });
     }
+  };
 
-    if (level.editMode === EditMode.MAP) {
-      switch (level.editModeTile?.type) {
-        case "BLANK":
-          level.replaceTile({
-            x: x,
-            y: y,
-            frameCoordinate: null,
-          });
-          break;
+  const handleMapEditing = () => {
+    const tileType = level.editModeTile?.type;
 
-        case "FLOOR":
-          level.replaceTile({
-            x: x,
-            y: y,
-            frameCoordinate: themeTiles.FLOOR,
-          });
-          break;
-
-        default:
-          level.addPlacement({
-            x: x,
-            y: y,
-            ...level.editModeTile,
-          });
-          break;
-      }
+    if (tileType === "BLANK") {
+      level.replaceTile({ x, y, frameCoordinate: null });
+    } else if (tileType === "FLOOR") {
+      level.replaceTile({ x, y, frameCoordinate: themeTiles.FLOOR });
+    } else {
+      level.addPlacement({ x, y, ...level.editModeTile });
     }
   };
 
-  // console.log("frame", frameCoordinate);
+  const onCellClick = () => {
+    if (level.editMode === EditMode.MAP) {
+      handleMapEditing();
+    }
+
+    if (level.editMode === EditMode.PLACEMENT) {
+      handlePlacement();
+    }
+  };
 
   return (
     <div

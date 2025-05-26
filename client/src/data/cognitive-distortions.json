@@ -1,5 +1,6 @@
-{
-  "all_or_nothing_thinking": {
+[
+  {
+    "id": "all_or_nothing_thinking",
     "title": "All or Nothing Thinking",
     "emoji": ["🌓"],
     "explanation": {
@@ -8,7 +9,8 @@
     },
     "one_liner": "That was a thorough waste of time"
   },
-  "catastrophizing": {
+  {
+    "id": "catastrophizing",
     "title": "Catastrophizing",
     "emoji": ["🤯", "💥"],
     "explanation": {
@@ -17,7 +19,8 @@
     },
     "one_liner": "Focusing on the worst possible scenario"
   },
-  "emotional_reasoning": {
+  {
+    "id": "emotional_reasoning",
     "title": "Emotional Reasoning",
     "emoji": ["🎭"],
     "explanation": {
@@ -29,7 +32,8 @@
     },
     "one_liner": "I feel afraid, so I'll have a panic attack"
   },
-  "fortune_telling": {
+  {
+    "id": "fortune_telling",
     "title": "Fortune Telling",
     "emoji": ["🔮"],
     "explanation": {
@@ -38,7 +42,8 @@
     },
     "one_liner": "I'll get sick at the party"
   },
-  "labeling": {
+  {
+    "id": "labeling",
     "title": "Labeling",
     "emoji": ["🏷", "🍙"],
     "explanation": {
@@ -47,7 +52,8 @@
     },
     "one_liner": "He's a jerk"
   },
-  "magnification_of_the_negative": {
+  {
+    "id": "magnification_of_the_negative",
     "title": "Magnification of the Negative",
     "emoji": ["👎"],
     "explanation": {
@@ -56,7 +62,8 @@
     },
     "one_liner": "Focusing only on what went wrong"
   },
-  "mind_reading": {
+  {
+    "id": "mind_reading",
     "title": "Mind Reading",
     "emoji": ["🧠", "💭"],
     "explanation": {
@@ -65,7 +72,8 @@
     },
     "one_liner": "I'll bet he hates me now"
   },
-  "minimization_of_the_positive": {
+  {
+    "id": "minimization_of_the_positive",
     "title": "Minimization of the Positive",
     "emoji": ["👍"],
     "explanation": {
@@ -74,19 +82,8 @@
     },
     "one_liner": "Ignoring the good things that happened"
   },
-  "other_blaming": {
-    "title": "Other Blaming",
-    "emoji": ["🧛‍", "👺"],
-    "explanation": {
-      "text": [
-        "If a bad situation must be the fault of someone, we're other-blaming. If you failed an exam and you're blaming the teacher, you're directing your energy to the wrong place. Someone cut you off on the highway? If you honk your horn, flip them off, and stew, how is that helping? Now you're cut off and mad!",
-        "This doesn't mean you have to blame yourself for every negative situation. You don't have to blame anyone. No one has to be at fault if you let the situation pass without attaching blame."
-      ],
-      "example": "That jerk is taking too long in line and I'm going to be late!"
-    },
-    "one_liner": "Assigning all the blame to someone else"
-  },
-  "over_generalization": {
+  {
+    "id": "over_generalization",
     "title": "Over Generalization",
     "emoji": ["👯‍"],
     "explanation": {
@@ -95,7 +92,8 @@
     },
     "one_liner": "Everyone will let me down"
   },
-  "self_blaming": {
+  {
+    "id": "self_blaming",
     "title": "Self Blaming",
     "emoji": ["👁", "🚷"],
     "explanation": {
@@ -104,7 +102,8 @@
     },
     "one_liner": "Taking all the blame on yourself"
   },
-  "should_statements": {
+  {
+    "id": "should_statements",
     "title": "Should Statements",
     "emoji": ["✨"],
     "explanation": {
@@ -115,5 +114,18 @@
       "example": "I'm an adult, I shouldn't have these mental issues."
     },
     "one_liner": "I should have been better"
+  },
+  {
+    "id": "other_blaming",
+    "title": "Other Blaming",
+    "emoji": ["🧛‍", "👺"],
+    "explanation": {
+      "text": [
+        "If a bad situation must be the fault of someone, we're other-blaming. If you failed an exam and you're blaming the teacher, you're directing your energy to the wrong place. Someone cut you off on the highway? If you honk your horn, flip them off, and stew, how is that helping? Now you're cut off and mad!",
+        "This doesn't mean you have to blame yourself for every negative situation. You don't have to blame anyone. No one has to be at fault if you let the situation pass without attaching blame."
+      ],
+      "example": "That jerk is taking too long in line and I'm going to be late!"
+    },
+    "one_liner": "Assigning all the blame to someone else"
   }
-}
+]

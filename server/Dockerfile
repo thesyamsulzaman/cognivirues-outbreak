@@ -12,9 +12,9 @@ RUN npm install -g prisma
 COPY . .
 
 RUN npm run build
-RUN npx prisma generate
+RUN npm run prod:prisma:generate
 
 EXPOSE 3000
 
 
-CMD ["sh", "-c", "npx prisma db push && npm run start:prod"]
+CMD ["sh", "-c", "npm run prod:prisma:push && npm run prod:start"]

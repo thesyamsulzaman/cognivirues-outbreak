@@ -15,7 +15,8 @@ export const createJWT = (user: any) => {
       id: user?.id,
       username: user?.username,
     },
-    process.env.JWT_SECRET_KEY as string
+    process.env.JWT_SECRET_KEY as string,
+    { expiresIn: "1d" }
   );
 
   return token;
@@ -46,6 +47,7 @@ export const protect = () => (req: any, res: any, next: any) => {
 
   try {
     const user = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
+
     req.user = user;
 
     next();

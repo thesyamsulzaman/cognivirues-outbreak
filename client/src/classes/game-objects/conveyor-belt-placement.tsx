@@ -1,11 +1,7 @@
 import { TILES } from "@/constants/tiles";
 import Sprite from "../../components/object-graphics/sprite";
 import Placement from "../placement";
-import {
-  BODY_SKINS,
-  Direction,
-  PLACEMENT_TYPE_FLOUR,
-} from "@/constants/helpers";
+import { BODY_SKINS, Direction } from "@/constants/helpers";
 
 const directionFrameMap = {
   [Direction.Left]: TILES.CONVEYOR_LEFT,

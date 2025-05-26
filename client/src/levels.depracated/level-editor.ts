@@ -1,0 +1,41 @@
+import {
+  Direction,
+  LevelThemes,
+  PLACEMENT_TYPE_BOUND,
+  PLACEMENT_TYPE_FIRE,
+  PLACEMENT_TYPE_FIRE_PICKUP,
+  PLACEMENT_TYPE_FLOUR,
+  PLACEMENT_TYPE_FLYING_ENEMY,
+  PLACEMENT_TYPE_GOAL,
+  PLACEMENT_TYPE_GROUND_ENEMY,
+  PLACEMENT_TYPE_HERO,
+  PLACEMENT_TYPE_ICE,
+  PLACEMENT_TYPE_ICE_PICKUP,
+  PLACEMENT_TYPE_INFECTED,
+  PLACEMENT_TYPE_KEY,
+  PLACEMENT_TYPE_LOCK,
+  PLACEMENT_TYPE_ROAMING_ENEMY,
+  PLACEMENT_TYPE_SWITCH,
+  PLACEMENT_TYPE_SWITCH_DOOR,
+  PLACEMENT_TYPE_TELEPORT,
+  PLACEMENT_TYPE_THIEF,
+  PLACEMENT_TYPE_WALL,
+  PLACEMENT_TYPE_WATER,
+  PLACEMENT_TYPE_WATER_PICKUP,
+} from "@/constants/helpers";
+
+const levelIntro = {
+  theme: LevelThemes.Blue,
+  tilesHeight: 12,
+  tilesWidth: 12,
+  tiles: [],
+  placements: [
+    {
+      type: "HERO",
+      x: 2,
+      y: 4,
+    },
+  ],
+};
+
+export default levelIntro;

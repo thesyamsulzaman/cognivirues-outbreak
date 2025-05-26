@@ -6,11 +6,13 @@ import { memo, useEffect, useRef } from "react";
 const Sprite = ({
   frameCoordinate,
   size = 16,
+  className = "",
 }: {
   frameCoordinate: string;
   size?: number;
+  className?: string;
 }) => {
-  const { image } = useGame();
+  const { image } = useGame({});
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -44,7 +46,9 @@ const Sprite = ({
     );
   }, [frameCoordinate, image, size]);
 
-  return <canvas height={size} width={size} ref={canvasRef!} />;
+  return (
+    <canvas height={size} width={size} ref={canvasRef!} className={className} />
+  );
 };
 
 export default memo(Sprite);

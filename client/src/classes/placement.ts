@@ -7,6 +7,7 @@ import {
 import { Collision } from "./collision";
 
 interface PlacementProperties {
+  state: any;
   id: string;
   type: string;
   x: number;

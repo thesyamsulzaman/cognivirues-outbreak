@@ -2,10 +2,10 @@ import axios from "axios";
 import { create } from "apisauce";
 import JSCookie from "js-cookie";
 
-export const COOKIE_TOKEN = import.meta.env.VITE_COOKIE_TOKEN || "";
-export const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-
 export const api = () => {
+  const COOKIE_TOKEN = import.meta.env.VITE_COOKIE_TOKEN || "";
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+
   const authCookie = JSCookie.get(COOKIE_TOKEN) || getCookie(COOKIE_TOKEN);
   const baseApi = axios.create({
     baseURL: BASE_URL,
@@ -15,11 +15,6 @@ export const api = () => {
       Authorization: `Bearer ${authCookie}`,
     },
   });
-
-  baseApi.interceptors.response.use(
-    (response) => response,
-    (error) => {}
-  );
 
   return create({
     baseURL: BASE_URL,
@@ -35,6 +30,7 @@ export const getCookie = (name: string) => {
 export const setCookie = (name: string, value: string) => {
   JSCookie.set(name, value, {
     domain: import.meta.env.VITE_COOKIE_DOMAIN,
+    expires: 365 * 100,
   });
 };
 

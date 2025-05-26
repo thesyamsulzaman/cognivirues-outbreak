@@ -22,8 +22,8 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
-    environment:
-      - NODE_ENV=development
+    env_file:
+      - ./server/.env.production
     networks:
       - cognivirues-server
       - cognivirues-postgres

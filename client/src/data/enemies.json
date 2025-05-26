@@ -1,0 +1,546 @@
+[
+  {
+    "name": "Evelyn",
+    "description": "Haunted by self-doubt and unfulfilled potential, she battles her inner critic.",
+    "team": "enemy",
+    "tile": "26x15",
+    "xp": 30,
+    "hp": 100,
+    "maxXp": 100,
+    "maxHp": 100,
+    "intro": [
+      {
+        "type": "textMessage",
+        "text": "I've let so many opportunities slip away."
+      },
+      {
+        "type": "textMessage",
+        "text": "Comparison steals my joy and confidence."
+      },
+      {
+        "type": "textMessage",
+        "text": "I should be doing better at this stage of my life."
+      }
+    ],
+    "backstories": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I remember my graduation day; it felt like a weight lifted."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: Yet, it was overshadowed by fear of failing."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: The pressure to succeed has only increased since then."
+      }
+    ],
+    "finalRemarks": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: Maybe I won't ever be enough."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I will keep battling these feelings of inadequacy."
+      }
+    ],
+    "actions": [
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I should have achieved more by now."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Everyone else is progressing; I must be doing something wrong."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I should feel happier and more fulfilled."
+          }
+        ],
+        "answer": "should_statements",
+        "options": ["should_statements", "self_blaming", "catastrophizing"]
+      },
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Everyone thinks I’m a failure for not meeting expectations."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: They all look at me with pity."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I’ll never recover from this setback."
+          }
+        ],
+        "answer": "mind_reading",
+        "options": [
+          "mind_reading",
+          "magnification_of_the_negative",
+          "fortune_telling"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Evelyn",
+    "description": "Haunted by regrets and lost opportunities, she feels trapped in self-doubt.",
+    "team": "enemy",
+    "tile": "26x15",
+    "xp": 30,
+    "hp": 100,
+    "maxXp": 100,
+    "maxHp": 100,
+    "intro": [
+      {
+        "type": "textMessage",
+        "text": "I can’t shake the feeling of failure."
+      },
+      {
+        "type": "textMessage",
+        "text": "Every decision feels like a mistake."
+      },
+      {
+        "type": "textMessage",
+        "text": "What if I never find my way?"
+      }
+    ],
+    "backstories": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I chose the wrong path, and now I'm lost."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I see others thriving while I stagnate."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I let my family down with my choices."
+      }
+    ],
+    "finalRemarks": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I can’t escape my regrets."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I was never worthy of success."
+      }
+    ],
+    "actions": [
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: They all think I’m a disappointment."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: If only I had made better choices."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I’m not good enough for this."
+          }
+        ],
+        "answer": "self_blaming",
+        "options": ["self_blaming", "over_generalization", "catastrophizing"]
+      },
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I’ll never live up to my potential."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: This failure defines who I am."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I should have achieved so much more."
+          }
+        ],
+        "answer": "should_statements",
+        "options": [
+          "should_statements",
+          "mind_reading",
+          "minimization_of_the_positive"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Lucas",
+    "description": "Haunted by regrets, he battles his own harsh judgments.",
+    "team": "enemy",
+    "tile": "26x15",
+    "xp": 30,
+    "hp": 100,
+    "maxXp": 100,
+    "maxHp": 100,
+    "intro": [
+      {
+        "type": "textMessage",
+        "text": "I feel trapped in my own expectations."
+      },
+      {
+        "type": "textMessage",
+        "text": "Every decision seems like a wrong choice."
+      },
+      {
+        "type": "textMessage",
+        "text": "People must think I’m a failure."
+      }
+    ],
+    "backstories": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I can’t shake off the feeling of not being good enough."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: It’s exhausting comparing myself to everyone else."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: Opportunities slip away while I stay paralyzed by fear."
+      }
+    ],
+    "finalRemarks": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I thought I could prove them wrong."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: Regret is the only victory I’ve known."
+      }
+    ],
+    "actions": [
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: They all see me as a disappointment."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Everyone is judging my every mistake."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Why do I even try if I can’t succeed?"
+          }
+        ],
+        "answer": "mind_reading",
+        "options": ["mind_reading", "self_blaming", "other_blaming"]
+      },
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: If I fail this, my life is over."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Every tiny setback is a catastrophic failure."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: No one will want to help me again."
+          }
+        ],
+        "answer": "catastrophizing",
+        "options": [
+          "catastrophizing",
+          "minimization_of_the_positive",
+          "fortune_telling"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Lucas",
+    "description": "Haunted by regrets and doubts, he battles self-criticism.",
+    "team": "enemy",
+    "tile": "26x15",
+    "xp": 30,
+    "hp": 100,
+    "maxXp": 100,
+    "maxHp": 100,
+    "intro": [
+      {
+        "type": "textMessage",
+        "text": "I feel like I'm stuck in a cycle of regret."
+      },
+      {
+        "type": "textMessage",
+        "text": "Every missed opportunity weighs heavily on my mind."
+      },
+      {
+        "type": "textMessage",
+        "text": "It seems like everyone else is moving forward."
+      },
+      {
+        "type": "textMessage",
+        "text": "I can't help but judge myself harshly."
+      }
+    ],
+    "backstories": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I've never been good enough, always comparing myself to others."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: Graduation felt like an end, not a new beginning."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: My family's sacrifices feel wasted on my failures."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I fear I'll never reach my dreams, paralyzed by doubt."
+      }
+    ],
+    "finalRemarks": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I thought I could be perfect, but I failed."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I can't seem to escape these feelings of worthlessness."
+      }
+    ],
+    "actions": [
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: If I can't be exceptional, I'm a complete failure."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Everyone is ahead of me; I'm worthless."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: It's all or nothing; there’s no in-between."
+          }
+        ],
+        "answer": "all_or_nothing_thinking",
+        "options": ["all_or_nothing_thinking", "self_blaming", "labeling"]
+      },
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Every setback proves I'm destined to fail."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I'll never find a good job; I'm just not cut out for it."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Nothing will change unless I achieve perfection."
+          }
+        ],
+        "answer": "catastrophizing",
+        "options": ["catastrophizing", "mind_reading", "should_statements"]
+      }
+    ]
+  },
+  {
+    "name": "Liam",
+    "description": "Haunted by regret and overwhelming self-doubt.",
+    "team": "enemy",
+    "tile": "26x15",
+    "xp": 30,
+    "hp": 100,
+    "maxXp": 100,
+    "maxHp": 100,
+    "intro": [
+      {
+        "type": "textMessage",
+        "text": "I see everyone moving ahead while I stand still."
+      },
+      {
+        "type": "textMessage",
+        "text": "Regret gnaws at me like a relentless shadow."
+      },
+      {
+        "type": "textMessage",
+        "text": "Each missed opportunity feels heavier than the last."
+      }
+    ],
+    "backstories": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I remember my graduation, joy mixed with crippling anxiety."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: My family sacrificed so much; I can’t let them down."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: It feels like I'm always falling short of expectations."
+      }
+    ],
+    "finalRemarks": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: What have I become in this struggle?"
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: The weight of my regrets will never leave."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I thought I could be more than this."
+      }
+    ],
+    "actions": [
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Everything I do will lead to disaster."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: If I fail even once, it proves I'm a failure."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: They're all judging me by my mistakes."
+          }
+        ],
+        "answer": "catastrophizing",
+        "options": ["catastrophizing", "self_blaming", "emotional_reasoning"]
+      },
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I’ll never be good enough compared to them."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I’ll always be stuck in this cycle of mediocrity."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Everyone else is thriving while I'm suffocating."
+          }
+        ],
+        "answer": "self_blaming",
+        "options": ["self_blaming", "over_generalization", "mind_reading"]
+      }
+    ]
+  },
+  {
+    "name": "Lena",
+    "description": "Burdened by regret, she feels trapped by her own expectations.",
+    "team": "enemy",
+    "tile": "26x15",
+    "xp": 30,
+    "hp": 100,
+    "maxXp": 100,
+    "maxHp": 100,
+    "intro": [
+      {
+        "type": "textMessage",
+        "text": "I always measure my worth against others."
+      },
+      {
+        "type": "textMessage",
+        "text": "Every decision feels like a burden now."
+      },
+      {
+        "type": "textMessage",
+        "text": "How did I let myself fall so far?"
+      }
+    ],
+    "backstories": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I regret choices that led me nowhere."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: My failures echo in my mind."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I see my friends succeeding, and I'm stuck."
+      }
+    ],
+    "finalRemarks": [
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: I can't keep living like this."
+      },
+      {
+        "type": "textMessage",
+        "text": "{CASTER}: Maybe there's still a way out."
+      }
+    ],
+    "actions": [
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I must be a failure since I haven’t succeeded yet."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: Everyone else thinks I’m inadequate."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: I can’t handle any more disappointment."
+          }
+        ],
+        "answer": "emotional_reasoning",
+        "options": ["emotional_reasoning", "labeling", "catastrophizing"]
+      },
+      {
+        "distortedThoughts": [
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: If I don't succeed, it means I'm worthless."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: They all look down on me for my choices."
+          },
+          {
+            "type": "textMessage",
+            "text": "{CASTER}: It's hopeless; I should just give up."
+          }
+        ],
+        "answer": "self_blaming",
+        "options": [
+          "self_blaming",
+          "mind_reading",
+          "minimization_of_the_positive"
+        ]
+      }
+    ]
+  }
+]

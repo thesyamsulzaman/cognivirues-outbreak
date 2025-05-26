@@ -6,65 +6,37 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [vector]
 }
 
 model Player {
-  id          String      @id @default(uuid())
-  createdAt   DateTime    @default(now())
-  username    String?     @unique
-  email       String      @unique
-  password    String?
-  inventories Inventory[]
-  journals    Journals[]
+  id                            String      @id @default(uuid())
+  createdAt                     DateTime    @default(now())
+  username                      String?     @unique
+  email                         String      @unique
+  password                      String?
+  encryptionKey                 String?     @unique
+  journals                      Journal[]
 }
 
-model Journal {}
-model Distortions {}
-model JournalDistortions {}
-
-model Inventory {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  name        String   @db.VarChar(255)
-  belongsToId String
-  belongsTo   Player   @relation(fields: [belongsToId], references: [id])
-  updates     Update[]
+model Journal {
+  id                            String                         @id @default(uuid())
+  createdAt                     DateTime                       @default(now())
+  title                         String
+  body                          String
+  alternative                   String?
+  challenge                     String?
+  cognitiveDistortionIds        String[] 
+  contextKeywords               String[]
+  belongsToId                   String
+  belongsTo                     Player                         @relation(fields: [belongsToId], references: [id])
+  embedding                     Unsupported("vector(1536)")?   
+  encryptionMetadata            Json?        
 }
 
-enum UPDATE_STATUSES {
-  IN_PROGRESS
-  SHIPPED
-  DEPRECATED
-}
-
-model Update {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-
-  title   String
-  body    String
-  status  UPDATE_STATUSES @default(IN_PROGRESS)
-  version String?
-  asset   String?
-
-  inventoryId  String
-  inventory    Inventory     @relation(fields: [inventoryId], references: [id])
-  updatePoints UpdatePoint[]
-}
-
-model UpdatePoint {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-
-  name        String @db.VarChar(255)
-  description String
-  updateId    String
-  update      Update @relation(fields: [updateId], references: [id])
-}
