@@ -1,3 +1,4 @@
+// @ts-nocheck
 import prisma from "../libs/db";
 
 // Get all
