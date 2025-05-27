@@ -1840,8 +1840,6 @@ const level6 = {
     { type: "THIEF", x: 46, y: 14 },
     { type: "FLOUR", x: 9, y: 8 },
     { type: "FLOUR", x: 41, y: 8 },
-    { type: "DEMON_BOSS", x: 6, y: 11 },
-    { type: "DEMON_BOSS", x: 26, y: 13 },
     { type: "DEMON_BOSS", x: 30, y: 11 },
     { type: "DEMON_BOSS", x: 47, y: 13 },
   ],

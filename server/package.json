@@ -3,19 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json --skipLibCheck",
     "test": "jest --verbose",
-    "dev:run": "dotenv -e .env.development -- cross-env NODE_ENV=development nodemon src/index.ts --ignore messages-db.json",
+    "dev:run": "dotenv -e .env.development -- cross-env NODE_ENV=development nodemon --exec ts-node --transpile-only src/index.ts --ignore messages-db.json",
     "dev:run:ts": "dotenv -e .env.development -- cross-env NODE_ENV=development ts-node src/index.ts",
     "dev:start": "dotenv -e .env.development -- cross-env NODE_ENV=development node dist/index.js",
     "dev:prisma:format": "dotenv -e .env.development -- npx prisma format",
     "dev:prisma:generate": "dotenv -e .env.development -- npx prisma generate",
     "dev:prisma:migrate": "dotenv -e .env.development -- npx prisma migrate dev",
-    "dev:prisma:push": "dotenv -e .env.development -- npx prisma db push",
+    "dev:prisma:push": "dotenv -e .env.development -- npx prisma db push --accept-data-loss",
     "dev:prisma:studio": "dotenv -e .env.development -- npx prisma studio",
     "prod:start": "dotenv -e .env.production -- cross-env NODE_ENV=production node dist/index.js",
     "prod:prisma:generate": "dotenv -e .env.production -- npx prisma generate",
-    "prod:prisma:push": "dotenv -e .env.production -- npx prisma db push",
+    "prod:prisma:push": "dotenv -e .env.production -- npx prisma db push --accept-data-loss",
     "prod:prisma:studio": "dotenv -e .env.production -- npx prisma studio"
   },
   "prisma": {

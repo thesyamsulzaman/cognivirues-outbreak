@@ -475,22 +475,44 @@ export const AttackOptions = {
     name: "All Or Nothing Thinking",
     targetType: "enemy",
     success: [
-      { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!" }, // Narration
       {
         type: "textMessage",
-        text: "Distortion Exposed: *All Or Nothing Thinking*",
-      },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+        text: "{CASTER}: Just because you failed once doesn't mean you always will.",
+      }, // Caster insight
+      {
+        type: "textMessage",
+        text: "{TARGET}: Maybe... it's not so black and white.",
+      }, // Softening reaction
+      {
+        type: "textMessage",
+        text: "{TARGET}: I guess I’ve been ignoring the in-betweens.",
+      }, // Realization
+      {
+        type: "textMessage",
+        text: "Critical Hit! Distortion Exposed: *All Or Nothing Thinking*",
+      }, // Distortion reveal
+      { type: "stateChange", damage: 20 }, // Emotional damage
+      { type: "textMessage", text: "{TARGET} loses 20 emotional HP!" }, // Narrate damage
+      { type: "textMessage", text: "{TARGET} is beginning to heal..." }, // Healing hint
+      {
+        type: "textMessage",
+        text: "{TARGET}: I can learn to see the gray areas.",
+      }, // Growth
     ],
     failure: [
-      { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!" }, // Narration
+      { type: "textMessage", text: "Hmm… not quite." }, // System reaction
+      {
+        type: "textMessage",
+        text: "{TARGET}: I'm either perfect or a complete failure.",
+      }, // Negative reaction
+      {
+        type: "textMessage",
+        text: "{TARGET}: Why even try if I can't get it all right?",
+      }, // Deeper hopelessness
+      { type: "stateChange", damage: 15, onCaster: true }, // Caster damage
+      { type: "textMessage", text: "{CASTER} takes 15 emotional damage!" }, // Narrate damage
     ],
   },
   catastrophizing: {
@@ -499,229 +521,451 @@ export const AttackOptions = {
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
-      { type: "textMessage", text: "Distortion Exposed: *Catastrophizing*" },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      {
+        type: "textMessage",
+        text: "{CASTER}: Just because something bad *could* happen, doesn’t mean it *will*.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Huh... maybe I’m jumping to conclusions.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I often assume the worst without proof.",
+      },
+      {
+        type: "textMessage",
+        text: "Critical Hit! Distortion Exposed: *Catastrophizing*",
+      },
+      { type: "stateChange", damage: 25 },
+      { type: "textMessage", text: "{TARGET} loses 25 emotional HP!" },
+      { type: "textMessage", text: "{TARGET} is beginning to heal..." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I don’t have to fear every possibility.",
+      },
     ],
     failure: [
-      { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
+      { type: "textMessage", text: "Hmm… not quite." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: What if everything falls apart?",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: It’s all going to go wrong. I just know it.",
+      },
+      { type: "stateChange", damage: 20, onCaster: true },
+      { type: "textMessage", text: "{CASTER} takes 20 emotional damage!" },
     ],
   },
+
   emotional_reasoning: {
     id: "emotional_reasoning",
     name: "Emotional Reasoning",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
+      { type: "textMessage", text: "{CASTER}: Feelings aren't always facts." },
+      { type: "textMessage", text: "{TARGET}: I... hadn’t thought of that." },
       {
         type: "textMessage",
-        text: "Distortion Exposed: *Emotional Reasoning*",
+        text: "{TARGET}: Maybe just because I *feel* worthless, doesn’t mean I *am*.",
       },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      {
+        type: "textMessage",
+        text: "Critical Hit! Distortion Exposed: *Emotional Reasoning*",
+      },
+      { type: "stateChange", damage: 22 },
+      { type: "textMessage", text: "{TARGET} loses 22 emotional HP!" },
+      { type: "textMessage", text: "{TARGET} is beginning to heal..." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I can start separating feelings from facts.",
+      },
     ],
     failure: [
-      { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
+      { type: "textMessage", text: "Hmm… not quite." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: But I *feel* like a failure, so it must be true.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: These feelings prove I’m not good enough.",
+      },
+      { type: "stateChange", damage: 15, onCaster: true },
+      { type: "textMessage", text: "{CASTER} takes 15 emotional damage!" },
     ],
   },
+
   fortune_telling: {
     id: "fortune_telling",
     name: "Fortune Telling",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
-      { type: "textMessage", text: "Distortion Exposed: *Fortune Telling*" },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      {
+        type: "textMessage",
+        text: "{CASTER}: You can’t predict the future with certainty.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I guess... I don't *know* for sure what will happen.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I’ve been acting like every bad outcome is guaranteed.",
+      },
+      {
+        type: "textMessage",
+        text: "Critical Hit! Distortion Exposed: *Fortune Telling*",
+      },
+      { type: "stateChange", damage: 23 },
+      { type: "textMessage", text: "{TARGET} loses 23 emotional HP!" },
+      { type: "textMessage", text: "{TARGET} is beginning to heal..." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Maybe things won’t turn out so badly after all.",
+      },
     ],
     failure: [
-      { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
+      { type: "textMessage", text: "Hmm… not quite." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I just know it’s going to go wrong.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: There’s no point trying — I’ve seen this before.",
+      },
+      { type: "stateChange", damage: 18, onCaster: true },
+      { type: "textMessage", text: "{CASTER} takes 18 emotional damage!" },
     ],
   },
+
   labeling: {
     id: "labeling",
     name: "Labeling",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
-      { type: "textMessage", text: "Distortion Exposed: *Labeling*" },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      {
+        type: "textMessage",
+        text: "{CASTER}: One mistake doesn’t define your entire identity.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I mean... I’m more than just that failure.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I’ve been reducing myself to a single word.",
+      },
+      {
+        type: "textMessage",
+        text: "Critical Hit! Distortion Exposed: *Labeling*",
+      },
+      { type: "stateChange", damage: 26 },
+      { type: "textMessage", text: "{TARGET} loses 26 emotional HP!" },
+      { type: "textMessage", text: "{TARGET} is beginning to heal..." },
+      { type: "textMessage", text: "{TARGET}: I’m more complex than a label." },
     ],
     failure: [
-      { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
+      { type: "textMessage", text: "Hmm… not quite." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I’m just a failure. End of story.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: That’s who I am — nothing more.",
+      },
+      { type: "stateChange", damage: 16, onCaster: true },
+      { type: "textMessage", text: "{CASTER} takes 16 emotional damage!" },
     ],
   },
+
   magnification_of_the_negative: {
     id: "magnification_of_the_negative",
     name: "Magnification Of The Negative",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
       {
         type: "textMessage",
-        text: "Distortion Exposed: *Magnification Of The Negative*",
+        text: "{CASTER}: That one setback doesn’t erase everything good.",
       },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      {
+        type: "textMessage",
+        text: "{TARGET}: But it felt so big… like it overshadowed everything.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Maybe... I’ve been blowing it out of proportion.",
+      },
+      {
+        type: "textMessage",
+        text: "Critical Hit! Distortion Exposed: *Magnification Of The Negative*",
+      },
+      { type: "stateChange", damage: 25 },
+      { type: "textMessage", text: "{TARGET} loses 25 emotional HP!" },
+      { type: "textMessage", text: "{TARGET} is beginning to heal..." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I forgot to see the full picture.",
+      },
     ],
     failure: [
-      { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
+      { type: "textMessage", text: "Hmm… not quite." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: It’s always the mistakes that stand out.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Nothing good ever really counts...",
+      },
+      { type: "stateChange", damage: 17, onCaster: true },
+      { type: "textMessage", text: "{CASTER} takes 17 emotional damage!" },
     ],
   },
+
   mind_reading: {
     id: "mind_reading",
     name: "Mind Reading",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
-      { type: "textMessage", text: "Distortion Exposed: *Mind Reading*" },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      {
+        type: "textMessage",
+        text: "{CASTER}: You can’t be sure what others are thinking without asking.",
+      },
+      { type: "textMessage", text: "{TARGET}: But… the look they gave me—" },
+      { type: "textMessage", text: "{CASTER}: A look is not a sentence." },
+      {
+        type: "textMessage",
+        text: "Critical Hit! Distortion Exposed: *Mind Reading*",
+      },
+      { type: "stateChange", damage: 24 },
+      { type: "textMessage", text: "{TARGET} loses 24 emotional HP!" },
+      { type: "textMessage", text: "{TARGET} is beginning to heal..." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I’ve been jumping to conclusions without proof.",
+      },
     ],
     failure: [
-      { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
+      { type: "textMessage", text: "Hmm… not quite." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I know they think I’m a failure. I just know it.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Why would they act differently otherwise?",
+      },
+      { type: "stateChange", damage: 19, onCaster: true },
+      { type: "textMessage", text: "{CASTER} takes 19 emotional damage!" },
     ],
   },
+
   minimization_of_the_positive: {
     id: "minimization_of_the_positive",
     name: "Minimization Of The Positive",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
+      {
+        type: "textMessage",
+        text: "{CASTER}: Just because something was easy doesn't mean it wasn't valuable.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: It was nothing, really... anyone could’ve done it.",
+      },
+      {
+        type: "textMessage",
+        text: "{CASTER}: Why deny yourself credit for something real?",
+      },
       {
         type: "textMessage",
         text: "Distortion Exposed: *Minimization Of The Positive*",
       },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      { type: "stateChange", damage: 23 },
+      { type: "textMessage", text: "{TARGET} loses 23 emotional HP!" },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I guess... maybe I did do well after all.",
+      },
     ],
     failure: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: It doesn’t matter. It was just luck.",
+      },
+      { type: "textMessage", text: "The insight doesn't break through..." },
       { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      { type: "stateChange", damage: 12, onCaster: true },
+      { type: "textMessage", text: "{CASTER} feels emotionally drained." },
     ],
   },
+
   over_generalization: {
     id: "over_generalization",
     name: "Over Generalization",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
+      {
+        type: "textMessage",
+        text: "{CASTER}: One failure doesn’t mean you’ll always fail.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: But I messed up once... it'll happen again.",
+      },
+      { type: "textMessage", text: "{CASTER}: The past isn’t prophecy." },
       {
         type: "textMessage",
         text: "Distortion Exposed: *Over Generalization*",
       },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      { type: "stateChange", damage: 22 },
+      { type: "textMessage", text: "{TARGET} loses 22 emotional HP!" },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Maybe this time can be different...",
+      },
     ],
     failure: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
-      { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Every time I try, it ends the same.",
+      },
+      {
+        type: "textMessage",
+        text: "The distortion twists {CASTER}'s words into hopelessness.",
+      },
+      { type: "stateChange", damage: 14, onCaster: true },
+      { type: "textMessage", text: "{CASTER} suffers emotional backlash!" },
     ],
   },
+
   should_statements: {
     id: "should_statements",
     name: "Should Statements",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
+      {
+        type: "textMessage",
+        text: "{CASTER}: Who decided you *must* always be perfect?",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I... I just should’ve known better.",
+      },
+      {
+        type: "textMessage",
+        text: "{CASTER}: ‘Should’ is a heavy chain you forged yourself.",
+      },
       { type: "textMessage", text: "Distortion Exposed: *Should Statements*" },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      { type: "stateChange", damage: 22 },
+      { type: "textMessage", text: "{TARGET} loses 22 emotional HP!" },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Maybe... I can allow myself to be human.",
+      },
     ],
     failure: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
+      { type: "textMessage", text: "{TARGET}: I should’ve done it better!" },
+      {
+        type: "textMessage",
+        text: "The word ‘should’ tightens its grip on {CASTER} instead.",
+      },
+      { type: "stateChange", damage: 12, onCaster: true },
       { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
     ],
   },
+
   self_blaming: {
     id: "self_blaming",
     name: "Self Blaming",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
+      {
+        type: "textMessage",
+        text: "{CASTER}: Not everything that goes wrong is your fault.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: But if I were better... maybe this wouldn’t have happened.",
+      },
+      {
+        type: "textMessage",
+        text: "{CASTER}: You’re carrying guilt that was never yours.",
+      },
       { type: "textMessage", text: "Distortion Exposed: *Self Blaming*" },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      { type: "stateChange", damage: 24 },
+      { type: "textMessage", text: "{TARGET} loses 24 emotional HP!" },
+      {
+        type: "textMessage",
+        text: "{TARGET}: I never thought to question that...",
+      },
     ],
     failure: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
+      {
+        type: "textMessage",
+        text: "{TARGET}: It’s still my fault. Always is.",
+      },
+      { type: "textMessage", text: "Guilt clings to {CASTER} instead." },
+      { type: "stateChange", damage: 13, onCaster: true },
       { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
     ],
   },
+
   other_blaming: {
     id: "other_blaming",
     name: "Other Blaming",
     targetType: "enemy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!" },
-      { type: "textMessage", text: "Insight strikes through the distortion!" },
+      {
+        type: "textMessage",
+        text: "{CASTER}: Sometimes blame hides the pain.",
+      },
+      {
+        type: "textMessage",
+        text: "{TARGET}: It’s all their fault—I wouldn’t be like this otherwise!",
+      },
+      {
+        type: "textMessage",
+        text: "{CASTER}: But healing starts when you reclaim your power.",
+      },
       { type: "textMessage", text: "Distortion Exposed: *Other Blaming*" },
-      { type: "stateChange", damage: 20 },
-      { type: "textMessage", text: "{TARGET} loses emotional HP!" },
-      // { type: "stateChange", status: { type: "clarity", expiresIn: 3 } },
+      { type: "stateChange", damage: 23 },
+      { type: "textMessage", text: "{TARGET} loses 23 emotional HP!" },
+      {
+        type: "textMessage",
+        text: "{TARGET}: Maybe it’s not only about what they did...",
+      },
     ],
     failure: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}..." },
-      { type: "textMessage", text: "{TARGET} resists the insight." },
-      { type: "textMessage", text: "The distortion rebounds onto {CASTER}!" },
-      { type: "stateChange", damage: 10, onCaster: true },
+      { type: "textMessage", text: "{TARGET}: They made me this way!" },
+      { type: "textMessage", text: "Rage reflects back on {CASTER}." },
+      { type: "stateChange", damage: 11, onCaster: true },
       { type: "textMessage", text: "{CASTER} suffers emotional backlash." },
     ],
   },

@@ -1,14 +1,12 @@
-// @ts-nocheck
 {
   "compilerOptions": {
     "downlevelIteration": true,
     "sourceMap": true,
     "outDir": "./dist",
-
     "lib": ["esnext"],
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    // "module": "Preserve",
+    // "moduleResolution": "bundler",
     "noImplicitAny": false,
     "rootDir": "./src",
     "declaration": true,
