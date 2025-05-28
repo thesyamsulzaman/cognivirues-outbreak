@@ -15,15 +15,25 @@ const DEFAULT_PROGRESS: Required<Progress> = {
 export class ProgressEntry {
   private storage: PersistedStorage;
 
-  constructor() {
-    this.storage = new PersistedStorage({ name: "Progress" });
+  constructor({ prefix }) {
+    this.storage = new PersistedStorage({ name: `${prefix}-Progress` });
   }
 
-  get(): Required<Progress> {
-    return {
+  get(): Required<Progress>;
+  get<K extends keyof Required<Progress>>(key: K): Required<Progress>[K];
+  get<K extends keyof Required<Progress>>(
+    key?: K
+  ): Required<Progress> | Required<Progress>[K] {
+    const merged = {
       ...DEFAULT_PROGRESS,
       ...this.storage.get(),
     };
+
+    if (key) {
+      return merged[key];
+    }
+
+    return merged;
   }
 
   save(update: Progress = {}): void {
@@ -43,7 +53,3 @@ export class ProgressEntry {
     this.storage.save({ ...DEFAULT_PROGRESS });
   }
 }
-
-const progressEntry = new ProgressEntry();
-
-export default progressEntry;

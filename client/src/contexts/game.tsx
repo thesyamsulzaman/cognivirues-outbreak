@@ -1,25 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import { InfectedType } from "@/classes/game-objects/infected-placement";
-import { infectedState } from "@/classes/game-objects/infected-state";
+import { ProgressEntry } from "@/classes/progress-entry";
 import soundManager from "@/classes/sounds";
 import { GameEnemies } from "@/constants/content";
-import {
-  Direction,
-  PLACEMENT_TYPE_INFECTED,
-  SPRITESHEET_IMAGE_SRC,
-} from "@/constants/helpers";
+import { SPRITESHEET_IMAGE_SRC } from "@/constants/helpers";
 import usePersistedState from "@/hooks/use-persisted-state";
 import levels from "@/levels/levels-map";
 import { noop } from "lodash";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import Enemies from "@/data/enemies.json";
-import {
-  ActionBuilder,
-  ActionOptionBuilder,
-  CharacterBuilder,
-} from "@/classes/character-state-builder";
-import { TILES } from "@/constants/tiles";
-import progressEntry from "@/classes/progress-entry";
 
 interface GameContext {
   isEditing?: boolean;
@@ -28,28 +15,37 @@ interface GameContext {
   setLevelId: (levelId: keyof typeof levels) => void;
   levelEnemies: any;
   setLevelEnemies: (params: any) => void;
+  progressEntry: ProgressEntry | null;
 }
-
-const checkpoint = progressEntry.get().checkpoint as keyof typeof levels;
 
 soundManager.init();
 
-type GameProviderProps = { isEditing?: boolean; children: React.ReactNode };
+type GameProviderProps = {
+  profile: any;
+  children: React.ReactNode;
+};
 
 export const GameContext = createContext<GameContext>({
   image: null,
-  levelId: checkpoint,
+  levelId: "level-1",
   setLevelId: noop,
   levelEnemies: {},
   setLevelEnemies: noop,
+  progressEntry: null,
 });
 
-const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
+const GameProvider: React.FC<GameProviderProps> = ({ profile, children }) => {
   const [spriteSheetImage, setSpriteSheetImage] =
     useState<HTMLImageElement | null>(null);
-  const [levelId, setLevelId] = useState<keyof typeof levels>(checkpoint);
+
+  const progressEntry = new ProgressEntry({ prefix: profile?.username });
+
+  const [levelId, setLevelId] = useState<keyof typeof levels>(
+    progressEntry.get("checkpoint") as keyof typeof levels
+  );
+
   const [levelEnemies, setLevelEnemies] = usePersistedState(
-    "Enemies",
+    `${profile?.username}-Enemies`,
     GameEnemies
   );
 
@@ -76,6 +72,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         levelEnemies,
         setLevelId,
         setLevelEnemies,
+        progressEntry,
       }}
     >
       {children}

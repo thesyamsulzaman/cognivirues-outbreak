@@ -26,7 +26,7 @@ export const CATCH_UP_DIALOGS = [
   {
     type: "message",
     skippable: true,
-    text: "The Cognivirus hides in your thoughts — let’s see how you’ve been holding up.",
+    text: "The Cognivirues hides in your thoughts — let’s see how you’ve been holding up.",
   },
   {
     type: "message",
@@ -297,7 +297,7 @@ export const GameDialogs = {
         {
           withNarrator: true,
           type: "textMessage",
-          text: "Cognivirus might return. Doubts, fear, guilt... they always do. But next time, I’ll be ready.",
+          text: "Cognivirues might return. Doubts, fear, guilt... they always do. But next time, I’ll be ready.",
         },
         {
           withNarrator: true,
@@ -390,7 +390,7 @@ export const TUTORIAL_DIALOGS = [
   {
     type: "message",
     skippable: true,
-    text: "After investigating, I discovered they were enemy by a virus called Cognivirus.",
+    text: "After investigating, I discovered they were enemy by a virus called Cognivirues.",
   },
   {
     type: "message",
@@ -415,7 +415,7 @@ export const TUTORIAL_DIALOGS = [
   {
     type: "message",
     skippable: true,
-    text: "I will analyze your journal entries to identify any early signs of Cognivirus.",
+    text: "I will analyze your journal entries to identify any early signs of Cognivirues.",
   },
   {
     type: "message",

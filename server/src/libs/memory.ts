@@ -3,7 +3,6 @@ import path from "path";
 
 const DB_PATH = path.resolve("messages-db.json");
 
-// Generate a unique ID using timestamp and random numbers
 const generateId = () => `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
 export const addMetadata = (message) => ({
@@ -17,7 +16,7 @@ export const removeMetadata = (message) => {
   return rest;
 };
 
-const defaultData = {
+const defaultUserData = {
   messages: [],
   summary: "",
 };
@@ -27,7 +26,7 @@ const readDb = async () => {
     const data = await fs.readFile(DB_PATH, "utf8");
     return JSON.parse(data);
   } catch (error) {
-    return defaultData; // If file doesn't exist, return default data
+    return {}; // Return empty object if DB not initialized
   }
 };
 
@@ -36,38 +35,40 @@ const writeDb = async (data) => {
     await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2), "utf8");
   } catch (error) {
     console.error("Error writing to DB:", error);
-    throw error; // Prevent silent failures
+    throw error;
   }
 };
 
-export const clearMessages = async () => {
+const ensureUserData = (db, userId) => {
+  if (!db[userId]) {
+    db[userId] = { ...defaultUserData };
+  }
+  return db;
+};
+
+export const clearMessages = async (userId) => {
   try {
     const db = await readDb();
-    db.messages = [];
-    writeDb(db);
+    if (db[userId]) {
+      delete db[userId]; // Completely remove the user's entry
+      await writeDb(db);
+    }
   } catch (error) {
-    console.error("Error in clearMessages", error);
-    throw error; // Prevent silent failures
+    console.error("Error in clearMessages:", error);
+    throw error;
   }
 };
 
-export const addMessages = async (messages) => {
+export const addMessages = async (userId, messages) => {
   try {
     const db = await readDb();
+    ensureUserData(db, userId);
 
-    db.messages.push(...messages.map(addMetadata));
+    db[userId].messages.push(...messages.map(addMetadata));
 
-    if (db.messages.length >= 10) {
-      // Avoid blocking by moving to background processing
-      // setTimeout(async () => {
-      //   try {
-      //     const oldestMessages = db.messages.slice(0, 5).map(removeMetadata);
-      //     db.summary = await summarizeMessages(oldestMessages);
-      //     await writeDb(db);
-      //   } catch (err) {
-      //     console.error("Error summarizing messages:", err);
-      //   }
-      // }, 0);
+    // Optional background task if too many messages
+    if (db[userId].messages.length >= 10) {
+      // Handle background tasks here if needed
     }
 
     await writeDb(db);
@@ -77,9 +78,11 @@ export const addMessages = async (messages) => {
   }
 };
 
-export const getMessages = async () => {
+export const getMessages = async (userId) => {
   const db = await readDb();
-  const messages = db.messages.map(removeMetadata);
+  if (!db[userId]) return [];
+
+  const messages = db[userId].messages.map(removeMetadata);
   const lastFive = messages.slice(-5);
 
   if (lastFive[0]?.role === "tool") {
@@ -90,13 +93,13 @@ export const getMessages = async () => {
   return lastFive;
 };
 
-export const getSummary = async () => {
+export const getSummary = async (userId) => {
   const db = await readDb();
-  return db.summary;
+  return db[userId]?.summary ?? "";
 };
 
-export const saveToolResponse = async (toolCallId, toolResponse) => {
-  return addMessages([
+export const saveToolResponse = async (userId, toolCallId, toolResponse) => {
+  return addMessages(userId, [
     {
       role: "tool",
       content: toolResponse,

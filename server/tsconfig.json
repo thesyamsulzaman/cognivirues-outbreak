@@ -5,8 +5,6 @@
     "outDir": "./dist",
     "lib": ["esnext"],
     "esModuleInterop": true,
-    // "module": "Preserve",
-    // "moduleResolution": "bundler",
     "noImplicitAny": false,
     "rootDir": "./src",
     "declaration": true,

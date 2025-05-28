@@ -8,11 +8,7 @@ import {
 } from "@/constants/helpers";
 import Body from "../../components/object-graphics/body";
 import Placement from "../placement";
-import { TILES } from "@/constants/tiles";
-import { Battle } from "../battle";
-import { MessageContent, QuizzesContent } from "../../components/hud/dialog";
-import distortionEntry from "../distortion-entry";
-import { InfectedState } from "./infected-state";
+
 import { JSX } from "react";
 
 export const InfectedType = {
@@ -23,7 +19,7 @@ export const InfectedType = {
 export class InfectedPlacement extends Placement {
   defeatedInFrames: number;
   variant: keyof typeof InfectedType;
-  state: InfectedState;
+  state: any;
 
   constructor(properties, level) {
     super(properties, level);

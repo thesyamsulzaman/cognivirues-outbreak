@@ -20,7 +20,6 @@ import { Camera } from "./camera";
 import soundManager, { SFX } from "./sounds";
 import { Battle } from "./battle";
 import { DialogEvent } from "./dialog-event";
-import progressEntry from "./progress-entry";
 import { noop } from "lodash";
 import { Tile } from "@/utils/generate-background-tiles";
 import { Disclosure } from "./disclosure";

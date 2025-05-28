@@ -1,30 +1,19 @@
-import {
-  LevelThemes,
-  THEME_BACKGROUNDS,
-  THEME_BATTLE_SCREENS,
-} from "@/constants/helpers";
-import LevelBackgroundTilesLayer from "./level-backround-tiles-layer";
-import { Fragment, useEffect, useState } from "react";
-import LevelState, { EditMode } from "../../classes/level-state";
-import LevelCompleteMessage from "../hud/level-complete-message";
-import DeathMessage from "../hud/death-message";
-import TopHud from "../hud/top-hud";
-import RenderBattle from "./render-battle-v2";
-import {
-  ActionMenuDisplay,
-  DialogContainer,
-  DialogContentType,
-  TextMessageDisplay,
-} from "../hud/dialog";
-import { useGame } from "@/contexts/game";
-import JournalsManagement from "../hud/journals-management";
-import { Loader } from "@mantine/core";
-import LoadingMessage from "../hud/loading-message";
-import useGetJournals from "@/hooks/queries/use-get-journals";
-import usePostUpdateJournals from "@/hooks/mutations/use-put-update-journals";
-import Sprite from "../object-graphics/sprite";
-import { TILES } from "@/constants/tiles";
 import { GameDialogs } from "@/constants/content";
+import { LevelThemes, THEME_BACKGROUNDS } from "@/constants/helpers";
+import { TILES } from "@/constants/tiles";
+import { useGame } from "@/contexts/game";
+import useGetJournals from "@/hooks/queries/use-get-journals";
+import { useEffect, useState } from "react";
+import LevelState, { EditMode } from "../../classes/level-state";
+import DeathMessage from "../hud/death-message";
+import { DialogContentType, TextMessageDisplay } from "../hud/dialog";
+import JournalsManagement from "../hud/journals-management";
+import LevelCompleteMessage from "../hud/level-complete-message";
+import LoadingMessage from "../hud/loading-message";
+import TopHud from "../hud/top-hud";
+import Sprite from "../object-graphics/sprite";
+import LevelBackgroundTilesLayer from "./level-backround-tiles-layer";
+import RenderBattle from "./render-battle-v2";
 
 const RenderGame = ({ isEditing = false }) => {
   const [level, setLevel] = useState<any>(null);

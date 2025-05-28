@@ -1,8 +1,8 @@
-import progressEntry from "@/classes/progress-entry";
 import { DialogType, TextMessageDisplay } from "@/components/hud/dialog";
 import Journal from "@/components/ui/journaling";
 import OnboardingPopup from "@/components/ui/onboarding-popup";
 import { CATCH_UP_DIALOGS, TUTORIAL_DIALOGS } from "@/constants/content";
+import { useGame } from "@/contexts/game";
 import useGetTittle from "@/hooks/queries/use-get-title";
 import { Button } from "@mantine/core";
 import { noop } from "lodash";
@@ -14,6 +14,7 @@ const MainMenu = () => {
   const navigate = useNavigate();
   const { isSuccess } = useGetTittle();
   const timeoutRef = useRef<any>(null);
+  const { progressEntry } = useGame({});
 
   const [screen, setScreen] = useState("main-menu");
   const [announcerMessage, setAnnouncerMessage] = useState("");
@@ -25,7 +26,7 @@ const MainMenu = () => {
       color: "blue",
       onClick: () => setScreen("onboarding"),
     },
-    ...(progressEntry.get().hasCompletedTutorial
+    ...(progressEntry?.get("hasCompletedTutorial")
       ? [
           {
             id: "continue-game",
@@ -108,7 +109,7 @@ const MainMenu = () => {
           <OnboardingPopup
             isOpen
             onClose={() => {
-              progressEntry.save({ hasCompletedTutorial: true });
+              progressEntry?.save({ hasCompletedTutorial: true });
               setScreen("tutorial");
             }}
           />

@@ -1,4 +1,4 @@
-import { Loader } from "@mantine/core";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import {
   Navigate,
   Outlet,
@@ -6,33 +6,27 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
-import MainMenu from "./routes/menu";
+import LoadingMessage from "./components/hud/loading-message";
+import GameProvider from "./contexts/game";
+import useProfile from "./hooks/queries/use-get-profile";
 import Game from "./routes/game";
 import Login from "./routes/login";
+import MainMenu from "./routes/menu";
 import NotFound from "./routes/not-found";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import useProfile from "./hooks/queries/use-get-profile";
-import GameEditor from "./routes/game-editor";
-import GameProvider from "./contexts/game";
 
 const RouteProtection = () => {
-  const { isLoading, isError } = useProfile();
+  const { data, isLoading, isError } = useProfile();
 
   if (isError) {
     return <Navigate to="/auth/login" />;
   }
 
   if (isLoading) {
-    return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-semibold">Please wait ...</h1>
-        <Loader size="xl" type="dots" color="#8960AF" />
-      </div>
-    );
+    return <LoadingMessage />;
   }
 
   return (
-    <GameProvider>
+    <GameProvider profile={data?.profile}>
       <Outlet />
     </GameProvider>
   );

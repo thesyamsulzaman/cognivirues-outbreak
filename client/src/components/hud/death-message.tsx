@@ -11,7 +11,6 @@ import {
   PLACEMENT_TYPE_INFECTED,
 } from "@/constants/helpers";
 
-import progressEntry from "../../classes/progress-entry";
 import { useGame } from "@/contexts/game";
 
 const showDeathType = (deathType: string) => {

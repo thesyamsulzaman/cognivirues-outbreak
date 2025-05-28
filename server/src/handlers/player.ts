@@ -1,4 +1,5 @@
 import prisma from "../libs/db";
+import { generateEncryptionKey } from "../libs/encryption";
 import { comparePassword, createJWT, hashPassword } from "../utils/auth";
 import { Request, Response, NextFunction } from "express";
 
@@ -81,12 +82,12 @@ export const googleSignInCallback = async (req, res) => {
         data: {
           email: userInfo.email,
           username: userInfo.given_name || userInfo?.email?.split("@")[0],
+          encryptionKey: generateEncryptionKey(),
         },
       });
     }
 
     const token = createJWT(user);
-    // res.status(200).json({ token });
 
     res.redirect(`${process.env.FRONTEND_URL}/auth/login?token=${token}`);
   } catch (error) {
@@ -106,6 +107,7 @@ export const createPlayer = async (req: any, res: any, next: any) => {
         email: req.body.email,
         username: req.body.username,
         password: await hashPassword(req.body.password),
+        encryptionKey: generateEncryptionKey(),
       },
     });
     const token = createJWT(user);

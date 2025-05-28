@@ -206,6 +206,7 @@ export class LevelAnimatedFrames {
   tick() {
     Object.values(this.animations).forEach(({ LEFT, RIGHT }) => {
       LEFT.tick();
+      RIGHT.tick();
     });
   }
 }

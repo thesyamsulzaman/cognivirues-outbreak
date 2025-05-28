@@ -14,10 +14,9 @@ const getProfile = async () => {
         Cookie.remove(import.meta.env.VITE_COOKIE_TOKEN as string);
         window.location.href = "/auth/login";
       }
-      // console.log('Something is wrong');
     }
   } catch (error) {
-    // console.log('errror.utilities', error);
+    console.log("errror.profile", error);
   }
 };
 

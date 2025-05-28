@@ -25,9 +25,11 @@ if (!process.env.OPENAI_API_KEY) {
 export const journalBreakdown = async (req: any, res: any, next: any) => {
   try {
     const output = {};
+    const userId = req?.user?.id;
     const { name: distortionDetection } = distortionDetectionToolDefinition;
     const { name: enemiesGenerationTool } = enemiesGenerationToolDefinition;
-    await clearMessages();
+
+    await clearMessages(userId);
 
     const payload = {
       title: req.body.title,
@@ -53,11 +55,11 @@ export const journalBreakdown = async (req: any, res: any, next: any) => {
       2. Call **${enemiesGenerationTool}** to build ${ENEMIES_AMOUNT} alternative stories in a specified enemy json format
     `;
 
-    await addMessages([{ role: "user", content: prompt }]);
+    await addMessages(userId, [{ role: "user", content: prompt }]);
 
     // Agent Loop Starts
     while (true) {
-      const history = await getMessages();
+      const history = await getMessages(userId);
       const response = await runAIAgent({
         messages: history,
         tools,
@@ -67,10 +69,10 @@ export const journalBreakdown = async (req: any, res: any, next: any) => {
         ),
       });
 
-      await addMessages([response]);
+      await addMessages(userId, [response]);
 
       if (response.content) {
-        await clearMessages();
+        await clearMessages(userId);
 
         const content = JSON.parse(response?.content);
         output["id"] = content?.id;
@@ -87,6 +89,10 @@ export const journalBreakdown = async (req: any, res: any, next: any) => {
         const toolResponse = await runTool(toolCall, prompt);
         const jsonToolResponse = JSON.parse(toolResponse);
 
+        if (jsonToolResponse?.success === false && jsonToolResponse?.error) {
+          throw new Error(JSON.stringify(jsonToolResponse.error));
+        }
+
         if (
           toolCall?.function?.name === enemiesGenerationTool &&
           jsonToolResponse.success
@@ -94,7 +100,7 @@ export const journalBreakdown = async (req: any, res: any, next: any) => {
           output["enemies"] = jsonToolResponse?.data?.enemies;
         }
 
-        await saveToolResponse(toolCall.id, toolResponse);
+        await saveToolResponse(userId, toolCall.id, toolResponse);
       }
     }
   } catch (error) {
@@ -126,11 +132,13 @@ export const getAllJournals = async (req: any, res: any, next: any) => {
         challenge,
         cognitiveDistortionIds,
         encryptionMetadata,
+        createdAt,
       } = journal;
 
       return {
         id,
         cognitiveDistortionIds,
+        createdAt,
         ...extractJournal(
           {
             title: {

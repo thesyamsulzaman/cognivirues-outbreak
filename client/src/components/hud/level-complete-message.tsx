@@ -1,19 +1,19 @@
 import levels from "../../levels/levels-map";
-import progressEntry from "@/classes/progress-entry";
+
 import LevelCompletedSvg from "../object-graphics/level-completed-svg";
 import { useGame } from "@/contexts/game";
 import { useNavigate } from "react-router-dom";
 
 function LevelCompleteMessage() {
   const navigate = useNavigate();
-  const { levelId, setLevelId } = useGame({});
+  const { levelId, setLevelId, progressEntry } = useGame({});
 
   const onSendToNextLevel = () => {
     const levelKeys = Object.keys(levels);
     const currentIndex = levelKeys.findIndex((key) => key === levelId);
     const nextLevelId = levelKeys[currentIndex + 1] ?? levelKeys[0];
 
-    progressEntry.save({
+    progressEntry?.save({
       checkpoint: nextLevelId,
       completedLevels: levelKeys.slice(0, currentIndex + 1 + 1),
     });
