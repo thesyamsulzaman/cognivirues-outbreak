@@ -73,10 +73,9 @@ export const enemiesGeneration: ToolFn<Args, string> = async ({ toolArgs }) => {
             Each **action** must include:
             - **distortedThoughts**: An array of 2–5 'textMessage' items. Each starts with "{CASTER}: ..." and reflects the distortion clearly.
             - **answer**: The answer that represent the correct distortion, the key must be taken from exactly: ${distortionKeys}
-            - **options**: An array of 3 unique distortion keys from ${distortionKeys}, where:
+            - **options**: An array of 3 unique distortion keys from ${distortionKeys}, the array order must always be shuffled, where:
               - One must be the same as **answer**.
               - The other two are randomly selected from the remaining keys.
-              - The array order must always be shuffled.
 
             Respond in **valid JSON format** according to this schema, no additional commentary.
           `.trim();
