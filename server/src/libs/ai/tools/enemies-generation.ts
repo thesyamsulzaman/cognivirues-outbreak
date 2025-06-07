@@ -46,6 +46,7 @@ export const enemiesGeneration: ToolFn<Args, string> = async ({ toolArgs }) => {
 
             Create a story that reflects these struggles, written in **first person**, using the following cognitive distortions:
             ${distortionSets}
+            
 
             Then transform the story into a **structured RPG-style enemy** that fits the following schema:
 
@@ -75,7 +76,7 @@ export const enemiesGeneration: ToolFn<Args, string> = async ({ toolArgs }) => {
             - **answer**: The answer that represent the correct distortion, the key must be taken from exactly: ${distortionKeys}
             - **options**: An array of 3 unique distortion keys from ${distortionKeys}, the array order must always be shuffled, where:
               - One must be the same as **answer**.
-              - The other two are randomly selected from the remaining keys.
+              - The other two are randomly selected from the remaining keys and it must be distinguishable from the answer.
 
             Respond in **valid JSON format** according to this schema, no additional commentary.
           `.trim();

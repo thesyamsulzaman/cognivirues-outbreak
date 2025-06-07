@@ -44,6 +44,5 @@ journalRouter.put(
 journalRouter.post("/", validate(journalSchema), journalBreakdown);
 journalRouter.put("/:id", validate(journalSchema), journalUpdate);
 journalRouter.get("/", getAllJournals);
-// journalRouter.get("/testing", testing);
 
 export default journalRouter;

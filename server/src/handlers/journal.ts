@@ -26,8 +26,8 @@ export const journalBreakdown = async (req: any, res: any, next: any) => {
   try {
     const output = {};
     const userId = req?.user?.id;
-    const { name: distortionDetection } = distortionDetectionToolDefinition;
-    const { name: enemiesGenerationTool } = enemiesGenerationToolDefinition;
+    const distortionDetection = distortionDetectionToolDefinition?.name;
+    const enemiesGeneration = enemiesGenerationToolDefinition?.name;
 
     await clearMessages(userId);
 
@@ -52,7 +52,7 @@ export const journalBreakdown = async (req: any, res: any, next: any) => {
       \`\`\`
 
       1. Call **${distortionDetection}** to take the payload, analyze, breakdown and suggest a feedback
-      2. Call **${enemiesGenerationTool}** to build ${ENEMIES_AMOUNT} alternative stories in a specified enemy json format
+      2. Call **${enemiesGeneration}** to build ${ENEMIES_AMOUNT} alternative stories in a specified enemy json format
     `;
 
     await addMessages(userId, [{ role: "user", content: prompt }]);
@@ -94,7 +94,7 @@ export const journalBreakdown = async (req: any, res: any, next: any) => {
         }
 
         if (
-          toolCall?.function?.name === enemiesGenerationTool &&
+          toolCall?.function?.name === enemiesGeneration &&
           jsonToolResponse.success
         ) {
           output["enemies"] = jsonToolResponse?.data?.enemies;

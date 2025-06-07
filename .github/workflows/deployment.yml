@@ -1,0 +1,58 @@
+name: Cognivirues Outbreak Deployment
+
+# When this workflow should run:
+on:
+  push:
+    branches:
+      - main # Or 'master', or any branch you deploy from
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+
+  # deploy:
+  #   name: Deploy
+  #   runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+  # steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v4 # Checks out your code
+
+  #   - name: Set up Node.js
+  #     uses: actions/setup-node@v4
+  #     with:
+  #       node-version: "18" # Specify your Node.js version (e.g., 16, 18, 20)
+  #       cache: "npm" # Cache npm dependencies
+
+  #   - name: Install Dependencies
+  #     run: npm ci # 'ci' is generally recommended for CI for faster, more reliable builds
+
+  #   - name: Build React Application
+  #     run: npm run build # Assumes your build script is 'npm run build' and output is './dist' or './build'
+  #     env:
+  #       # Add any build-time environment variables your React app needs here
+  #       # Example: REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+  #       CI: true # Often used by Create React App to treat warnings as errors
+
+  #   - name: Configure AWS Credentials
+  #     uses: aws-actions/configure-aws-credentials@v4
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: ${{ secrets.AWS_REGION }} # e.g., 'us-east-1' or your S3 bucket's region
+
+  #   - name: Sync build directory to S3
+  #     run: |
+  #       aws s3 sync ./dist s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
+  #     # Change './dist' if your build output folder has a different name (e.g., './build')
+
+  #   - name: Invalidate CloudFront Distribution
+  #     run: |
+  #       aws cloudfront create-invalidation \
+  #         --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} \
+  #         --paths "/index.html" "/asset-manifest.json" "/manifest.json" "/favicon.ico" "/*"
+  #       # The "/*" invalidates everything.
+  #       # For Create React App with hashed assets, often "/index.html", "/asset-manifest.json", "/manifest.json", "/favicon.ico" are enough.
+  #       # You can list multiple specific paths: --paths "/index.html" "/specific/file.js" "/images/*"

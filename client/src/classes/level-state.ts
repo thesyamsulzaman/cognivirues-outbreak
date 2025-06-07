@@ -301,7 +301,8 @@ class LevelState {
     this.onEmit(this.getState());
   }
 
-  isPositionOutOfBounds(x, y) {
+  // isPositionOutOfBounds(x, y) {
+  isPositionOutOfBounds() {
     /**
      * The bound is any wall
      */
@@ -317,7 +318,7 @@ class LevelState {
     // );
   }
 
-  getState(): LevelStateData {
+  getState(): any {
     return {
       theme: this.theme!,
       tilesWidth: this.tilesWidth!,
@@ -326,8 +327,8 @@ class LevelState {
       placements: this.placements!,
       isCompleted: this.isCompleted!,
       deathOutcome: this.deathOutcome,
-      cameraTransformX: this?.camera?.transformX!,
-      cameraTransformY: this?.camera?.transformY!,
+      cameraTransformX: this.camera.transformX!,
+      cameraTransformY: this.camera.transformY!,
       inventory: this.inventory,
       restart: () => {
         this.start();

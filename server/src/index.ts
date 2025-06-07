@@ -64,22 +64,16 @@ app.use((err, req, res, next) => {
 (async function connectWithRetry(retries = 0) {
   try {
     await prismaClient.$connect();
-    console.log("Connected to the database");
+    console.log("[SERVER] Connected to the database");
   } catch (error) {
     if (retries < maxRetries) {
-      console.log(`Retrying to connect... (${retries + 1})`);
+      console.log(`[SERVER] Retrying to connect... (${retries + 1})`);
       setTimeout(() => connectWithRetry(retries + 1), 2000);
     } else {
-      console.error("Failed to connect to the database", error);
+      console.error("[SERVER] Failed to connect to the database", error);
       process.exit(1);
     }
   }
 })();
-
-if (process.env.NODE_ENV !== "test") {
-  https.createServer(options, app).listen(process.env.PORT, () => {
-    console.log(`[Server] Listening to port ${process.env.PORT}`);
-  });
-}
 
 export default app;

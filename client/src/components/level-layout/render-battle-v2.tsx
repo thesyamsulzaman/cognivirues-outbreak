@@ -2,6 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import BattleState from "@/classes/battle-state";
+import { InfectedType } from "@/classes/game-objects/enemy-placement";
 import {
   Direction,
   LevelThemes,
@@ -9,7 +12,8 @@ import {
   THEME_BATTLE_SCREENS,
 } from "@/constants/helpers";
 import { TILES } from "@/constants/tiles";
-import Body from "../object-graphics/body";
+import { useBattleSequence, wait } from "@/hooks/use-battle-sequence";
+
 import {
   ActionMenuDisplay,
   DialogContainer,
@@ -18,9 +22,7 @@ import {
   TextMessageDisplay,
 } from "../hud/dialog";
 import HealthBar from "../hud/healthbar";
-import { useBattleSequence, wait } from "@/hooks/use-battle-sequence";
-import BattleState from "@/classes/battle-state";
-import { InfectedType } from "@/classes/game-objects/enemy-placement";
+import Body from "../object-graphics/body";
 import Sprite from "../object-graphics/sprite";
 
 const RenderBattle = ({ level = null }: any) => {
