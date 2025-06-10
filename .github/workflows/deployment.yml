@@ -53,14 +53,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install Server Dependencies & Run Prisma Migration
-        working-directory: ./server
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          npm ci
-          npx prisma migrate deploy
-
       - name: Deploy to EC2 instance
         uses: appleboy/ssh-action@master
         with:
