@@ -38,7 +38,7 @@ jobs:
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+            --paths "/index.html" "/manifest.json" "/favicon.ico" "/robots.txt"
 
   deploy-server:
     name: Deploy Server to EC2
@@ -79,6 +79,9 @@ jobs:
 
             # Install production dependencies
             npm ci --only=production
+
+            # Prisma Deployment
+            npm run prod:prisma:migrate
 
             # Restart the application with PM2
             # This will gracefully restart the app if it's running,
