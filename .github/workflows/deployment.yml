@@ -72,7 +72,10 @@ jobs:
             # Install production dependencies
             npm ci --only=production
 
-            # Prisma Deployment
+            # Compile TypeScript to JavaScript
+            npm run build
+
+            # Run the Prisma migration
             npm run prod:prisma:migrate
 
             # Restart the application with PM2
