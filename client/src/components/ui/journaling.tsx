@@ -90,15 +90,12 @@ const Journaling = ({ isOpen, onClose, onFinish }) => {
 
   const handleVerifyAndSaveDistortions = async () => {
     const form = getValues();
-    const newLevelEnemies = { ...levelEnemies };
 
     try {
-      let enemiesIterationIdx = 0;
       const newAnalyzedDistortions = {};
       const newDistortionIds: Array<string> = [...selectedDistortionIds];
       const response = await breakdownJournal.mutateAsync(form);
-      const distortions = response.data.journalAnalysis.distortions;
-      const enemies = response?.data?.enemies;
+      const distortions = response?.data?.journalAnalysis?.insight?.distortions;
 
       for (const distortion of distortions) {
         if (!selectedDistortionIds.includes(distortion?.id)) {
@@ -111,57 +108,13 @@ const Journaling = ({ isOpen, onClose, onFinish }) => {
         };
       }
 
-      Object.keys(GameEnemies).forEach((levelId) => {
-        newLevelEnemies[levelId] = newLevelEnemies[levelId].map(
-          (preloadedEnemy) => {
-            const enemy = enemies[enemiesIterationIdx];
-            const state = new CharacterBuilder()
-              .setName(enemy?.name)
-              .setDescription(enemy?.description)
-              .setTile(TILES.INFECTED_MAN_LEFT_1)
-              .setTeam("enemy")
-              .setStats({
-                xp: enemy?.xp,
-                hp: enemy?.hp,
-                maxXp: enemy?.maxXp,
-                maxHp: enemy?.maxHp,
-                level: 1,
-              })
-              .setIntro(enemy.intro)
-              .setBackstories(enemy?.backstories)
-              .setFinalRemarks(enemy?.finalRemarks)
-              .addActions(
-                enemy?.actions?.map((action) =>
-                  new ActionBuilder()
-                    .setDistortedThoughts(action?.distortedThoughts)
-                    .setAnswer(action?.answer)
-                    .addOptions(
-                      action?.options?.map((option) => {
-                        return new ActionOptionBuilder(enemy, option!, {
-                          isCorrect: action.answer === option,
-                        });
-                      })
-                    )
-                )
-              )
-              .build();
-
-            const enrichedEnemy = { ...preloadedEnemy, state };
-
-            enemiesIterationIdx++;
-            return enrichedEnemy;
-          }
-        );
-      });
-
-      setLevelEnemies(newLevelEnemies);
       setAnalyzedDistortions(newAnalyzedDistortions);
       setValue("id", response?.data?.id);
       setValue("cognitiveDistortionIds", newDistortionIds);
 
       notifications.show({
         title: "Awesome",
-        message: response?.data?.journalAnalysis?.feedback,
+        message: response?.data?.journalAnalysis?.insight?.feedback,
         position: "top-right",
       });
     } catch (error) {
@@ -177,12 +130,62 @@ const Journaling = ({ isOpen, onClose, onFinish }) => {
 
   const handleNextStep = async (data) => {
     if (currentStep === "alternative") {
-      await updateJournal
-        .mutateAsync(data)
-        .then(onFinish)
-        .catch((error) => {
+      await updateJournal.mutate(data, {
+        onSuccess: (response) => {
+          let enemiesIterationIdx = 0;
+          const enemies = response?.data?.enemies;
+          const newLevelEnemies = { ...levelEnemies };
+
+          Object.keys(GameEnemies).forEach((levelId) => {
+            newLevelEnemies[levelId] = newLevelEnemies[levelId].map(
+              (preloadedEnemy) => {
+                const enemy = enemies[enemiesIterationIdx];
+                const state = new CharacterBuilder()
+                  .setName(enemy?.name)
+                  .setDescription(enemy?.description)
+                  .setTile(TILES.INFECTED_MAN_LEFT_1)
+                  .setTeam("enemy")
+                  .setStats({
+                    xp: enemy?.xp,
+                    hp: enemy?.hp,
+                    maxXp: enemy?.maxXp,
+                    maxHp: enemy?.maxHp,
+                    level: 1,
+                  })
+                  .setIntro(enemy.intro)
+                  .setBackstories(enemy?.backstories)
+                  .setFinalRemarks(enemy?.finalRemarks)
+                  .addActions(
+                    enemy?.actions?.map((action) =>
+                      new ActionBuilder()
+                        .setDistortedThoughts(action?.distortedThoughts)
+                        .setAnswer(action?.answer)
+                        .addOptions(
+                          action?.options?.map((option) => {
+                            return new ActionOptionBuilder(enemy, option!, {
+                              isCorrect: action.answer === option,
+                            });
+                          })
+                        )
+                    )
+                  )
+                  .build();
+
+                const enrichedEnemy = { ...preloadedEnemy, state };
+
+                enemiesIterationIdx++;
+                return enrichedEnemy;
+              }
+            );
+          });
+
+          setLevelEnemies(newLevelEnemies);
+          onFinish();
+        },
+        onError(error) {
           console.error("Update journal error", error);
-        });
+        },
+      });
     } else {
       setActiveStep((prev) => Math.min(prev + 1, JournalingSteps.length));
     }
@@ -227,7 +230,7 @@ const Journaling = ({ isOpen, onClose, onFinish }) => {
       </Stepper>
 
       <LoadingOverlay
-        visible={breakdownJournal.isPending}
+        visible={breakdownJournal.isPending || updateJournal.isPending}
         loaderProps={{ children: <LoadingAiProcess /> }}
         overlayProps={{ radius: "sm", blur: 5 }}
         zIndex={1000}
@@ -246,6 +249,7 @@ const Journaling = ({ isOpen, onClose, onFinish }) => {
                 autosize
                 minRows={5}
                 maxLength={500}
+                minLength={20}
                 {...register("body", { required: true })}
               />
             </Fragment>
@@ -315,6 +319,8 @@ const Journaling = ({ isOpen, onClose, onFinish }) => {
               placeholder="Challenge your thoughts here"
               autosize
               minRows={5}
+              minLength={20}
+              maxLength={500}
               {...register("challenge", { required: true })}
             />
           )}
@@ -324,6 +330,8 @@ const Journaling = ({ isOpen, onClose, onFinish }) => {
               placeholder="Write an alternative thought here"
               autosize
               minRows={5}
+              minLength={20}
+              maxLength={500}
               {...register("alternative", { required: true })}
             />
           )}

@@ -3,7 +3,6 @@ import Journal from "@/components/ui/journaling";
 import OnboardingPopup from "@/components/ui/onboarding-popup";
 import { CATCH_UP_DIALOGS, TUTORIAL_DIALOGS } from "@/constants/content";
 import { useGame } from "@/contexts/game";
-import useGetTittle from "@/hooks/queries/use-get-title";
 import { Button } from "@mantine/core";
 import { noop } from "lodash";
 
@@ -12,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 
 const MainMenu = () => {
   const navigate = useNavigate();
-  const { isSuccess } = useGetTittle();
   const timeoutRef = useRef<any>(null);
   const { progressEntry } = useGame({});
 
@@ -63,12 +61,9 @@ const MainMenu = () => {
       <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
         {screen === "main-menu" && (
           <div className="flex flex-col">
-            {isSuccess && (
-              <h1 className="text-8xl font-bold text-center mb-8">
-                Cognivirues <br />{" "}
-                <span className="text-red-500">Outbreak</span>
-              </h1>
-            )}
+            <h1 className="text-8xl font-bold text-center mb-8">
+              Cognivirues <br /> <span className="text-red-500">Outbreak</span>
+            </h1>
 
             <div className="flex flex-col space-y-4">
               {MENU.map((option) => (

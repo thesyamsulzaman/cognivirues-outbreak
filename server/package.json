@@ -15,6 +15,7 @@
     "dev:prisma:studio": "dotenv -e .env.development -- npx prisma studio",
     "prod:start": "dotenv -e .env.production -- cross-env NODE_ENV=production node dist/index.js",
     "prod:prisma:generate": "dotenv -e .env.production -- npx prisma generate",
+    "prod:prisma:migrate": "dotenv -e .env.production -- npx prisma migrate deploy",
     "prod:prisma:push": "dotenv -e .env.production -- npx prisma db push --accept-data-loss",
     "prod:prisma:studio": "dotenv -e .env.production -- npx prisma studio"
   },

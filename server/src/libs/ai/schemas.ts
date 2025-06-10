@@ -48,7 +48,7 @@ const actionSchema = z.object({
     `),
 });
 
-export const infectedOutputSchema = z.object({
+export const enemySchema = z.object({
   name: z.string().describe("A random first name of the enemy character"),
   description: z
     .string()
@@ -81,14 +81,8 @@ export const infectedOutputSchema = z.object({
     ),
 });
 
-export const journalOutputSchema = z.object({
-  id: z.string().describe("journalId from created journal"),
-  journalAnalysis: z.object({
-    title: z
-      .string()
-      .describe(
-        "Context specific main idea of the journal. Do not use markdown formatting or special characters."
-      ),
+export const journalAnalysisSchema = z.object({
+  insight: z.object({
     distortions: z
       .array(
         z.object({

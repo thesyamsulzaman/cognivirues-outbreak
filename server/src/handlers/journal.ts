@@ -1,20 +1,8 @@
-import { runAIAgent } from "../libs/ai";
-import { zodResponseFormat } from "openai/helpers/zod";
+import { JournalProcessor } from "../libs/ai";
 import { tools } from "../libs/ai/tools";
-import { runTool } from "../libs/ai/ai-tool-runner";
-import {
-  addMessages,
-  clearMessages,
-  getMessages,
-  saveToolResponse,
-} from "../libs/memory";
-
 import * as dotenv from "dotenv";
 import prisma from "../libs/db";
 import { buildJournalPayload, extractJournal } from "../utils/mappers";
-import { distortionDetectionToolDefinition } from "../libs/ai/tools/distortion-detection";
-import { ENEMIES_AMOUNT, journalOutputSchema } from "../libs/ai/schemas";
-import { enemiesGenerationToolDefinition } from "../libs/ai/tools/enemies-generation";
 
 dotenv.config();
 
@@ -22,87 +10,17 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("Missing OPENAI_API_KEY environment variable");
 }
 
+const journalProcessor = new JournalProcessor({ tools });
+
 export const journalBreakdown = async (req: any, res: any, next: any) => {
   try {
-    const output = {};
-    const userId = req?.user?.id;
-    const distortionDetection = distortionDetectionToolDefinition?.name;
-    const enemiesGeneration = enemiesGenerationToolDefinition?.name;
-
-    await clearMessages(userId);
-
-    const payload = {
+    const result = await journalProcessor.runAgentLoop(req?.user?.id, {
       title: req.body.title,
       body: req.body.body,
       cognitiveDistortionIds: req.body.cognitiveDistortionIds,
-    };
+    });
 
-    const prompt = `
-      Here's the user journal payload:
-
-      \`\`\`json
-        {
-          "userId": "${req?.user?.id}"
-          "title": "${payload.title}",
-          "body": "${payload.body}",
-          "cognitiveDistortionIds": ${JSON.stringify(
-            payload.cognitiveDistortionIds
-          )}
-        }
-      \`\`\`
-
-      1. Call **${distortionDetection}** to take the payload, analyze, breakdown and suggest a feedback
-      2. Call **${enemiesGeneration}** to build ${ENEMIES_AMOUNT} alternative stories in a specified enemy json format
-    `;
-
-    await addMessages(userId, [{ role: "user", content: prompt }]);
-
-    // Agent Loop Starts
-    while (true) {
-      const history = await getMessages(userId);
-      const response = await runAIAgent({
-        messages: history,
-        tools,
-        response_format: zodResponseFormat(
-          journalOutputSchema,
-          "journal-output-schema"
-        ),
-      });
-
-      await addMessages(userId, [response]);
-
-      if (response.content) {
-        await clearMessages(userId);
-
-        const content = JSON.parse(response?.content);
-        output["id"] = content?.id;
-        output["journalAnalysis"] = content?.journalAnalysis;
-
-        return res.json({
-          message: "Cognitive Distortion Breakdown",
-          data: { original: payload, ...output },
-        });
-      }
-
-      if (response.tool_calls) {
-        const toolCall = response.tool_calls[0];
-        const toolResponse = await runTool(toolCall, prompt);
-        const jsonToolResponse = JSON.parse(toolResponse);
-
-        if (jsonToolResponse?.success === false && jsonToolResponse?.error) {
-          throw new Error(JSON.stringify(jsonToolResponse.error));
-        }
-
-        if (
-          toolCall?.function?.name === enemiesGeneration &&
-          jsonToolResponse.success
-        ) {
-          output["enemies"] = jsonToolResponse?.data?.enemies;
-        }
-
-        await saveToolResponse(userId, toolCall.id, toolResponse);
-      }
-    }
+    return res.json(result);
   } catch (error) {
     next(error);
   }
@@ -234,18 +152,20 @@ export const journalUpdate = async (req: any, res: any, next: any) => {
 
     if (!player) return res.status(404).json({ error: "Player not found" });
 
-    const base = buildJournalPayload(
-      {
-        title: req.body.title,
-        body: req.body.body,
-        challenge: req.body.challenge,
-        alternative: req.body.alternative,
-        cognitiveDistortionIds: req.body.cognitiveDistortionIds,
-      },
-      { encryptionKey: player?.encryptionKey! }
-    );
+    const payload = {
+      title: req.body.title,
+      body: req.body.body,
+      challenge: req.body.challenge,
+      alternative: req.body.alternative,
+      cognitiveDistortionIds: req.body.cognitiveDistortionIds,
+    };
 
-    const updated = await prisma.journal.update({
+    const base = buildJournalPayload(payload, {
+      encryptionKey: player?.encryptionKey!,
+    });
+
+    await journalProcessor.approveEnemiesGeneration();
+    await prisma.journal.update({
       where: { id: req.params.id, belongsToId: req.user.id },
       data: {
         ...base,
@@ -253,10 +173,9 @@ export const journalUpdate = async (req: any, res: any, next: any) => {
       },
     });
 
-    return res.json({
-      message: "Cognitive Distortion Breakdown",
-      data: updated,
-    });
+    const result = await journalProcessor.runAgentLoop(req?.user?.id, payload);
+
+    return res.json(result);
   } catch (error) {
     next(error);
   }

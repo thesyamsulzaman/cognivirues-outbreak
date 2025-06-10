@@ -76,4 +76,8 @@ app.use((err, req, res, next) => {
   }
 })();
 
+https.createServer(options, app).listen(process.env.PORT, () => {
+  console.log(`[SERVER] Listening to port ${process.env.PORT}`);
+});
+
 export default app;

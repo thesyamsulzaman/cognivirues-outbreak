@@ -1,58 +1,86 @@
 name: Cognivirues Outbreak Deployment
 
-# When this workflow should run:
 on:
   push:
     branches:
-      - main # Or 'master', or any branch you deploy from
+      - main
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+  build-and-deploy-client:
+    name: Build and Deploy Client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  # deploy:
-  #   name: Deploy
-  #   runs-on: ubuntu-latest # Use the latest Ubuntu runner
+      - name: Install and Build Client
+        run: |
+          npm ci
+          npm run build --if-present
+        working-directory: ./client
 
-  # steps:
-  #   - name: Checkout Repository
-  #     uses: actions/checkout@v4 # Checks out your code
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-  #   - name: Set up Node.js
-  #     uses: actions/setup-node@v4
-  #     with:
-  #       node-version: "18" # Specify your Node.js version (e.g., 16, 18, 20)
-  #       cache: "npm" # Cache npm dependencies
+      - name: Sync build directory to S3
+        run: aws s3 sync ./client/dist s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
 
-  #   - name: Install Dependencies
-  #     run: npm ci # 'ci' is generally recommended for CI for faster, more reliable builds
+      - name: Invalidate CloudFront Distribution
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
 
-  #   - name: Build React Application
-  #     run: npm run build # Assumes your build script is 'npm run build' and output is './dist' or './build'
-  #     env:
-  #       # Add any build-time environment variables your React app needs here
-  #       # Example: REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-  #       CI: true # Often used by Create React App to treat warnings as errors
+  deploy-server:
+    name: Deploy Server to EC2
+    needs: build-and-deploy-client # Run this job after the client is deployed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-  #   - name: Configure AWS Credentials
-  #     uses: aws-actions/configure-aws-credentials@v4
-  #     with:
-  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #       aws-region: ${{ secrets.AWS_REGION }} # e.g., 'us-east-1' or your S3 bucket's region
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  #   - name: Sync build directory to S3
-  #     run: |
-  #       aws s3 sync ./dist s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
-  #     # Change './dist' if your build output folder has a different name (e.g., './build')
+      - name: Install Server Dependencies & Run Prisma Migration
+        working-directory: ./server
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          npm ci
+          npx prisma migrate deploy
 
-  #   - name: Invalidate CloudFront Distribution
-  #     run: |
-  #       aws cloudfront create-invalidation \
-  #         --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} \
-  #         --paths "/index.html" "/asset-manifest.json" "/manifest.json" "/favicon.ico" "/*"
-  #       # The "/*" invalidates everything.
-  #       # For Create React App with hashed assets, often "/index.html", "/asset-manifest.json", "/manifest.json", "/favicon.ico" are enough.
-  #       # You can list multiple specific paths: --paths "/index.html" "/specific/file.js" "/images/*"
+      - name: Deploy to EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Navigate to the project directory
+            cd ~/cognivirues-outbreak
+
+            # Pull the latest changes from the main branch
+            git pull origin main
+
+            # Navigate to the server directory
+            cd server
+
+            # Install production dependencies
+            npm ci --only=production
+
+            # Restart the application with PM2
+            # This will gracefully restart the app if it's running,
+            # or start it if it's not.
+            pm2 restart cognivirues-server || pm2 start "npm run prod:start" --name cognivirues-server

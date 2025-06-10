@@ -47,7 +47,6 @@ export const protect = () => (req: any, res: any, next: any) => {
 
   try {
     const user = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
-
     req.user = user;
 
     next();
