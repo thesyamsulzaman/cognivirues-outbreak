@@ -14,10 +14,10 @@ const journalProcessor = new JournalProcessor({ tools });
 
 export const journalBreakdown = async (req: any, res: any, next: any) => {
   try {
-    const result = await journalProcessor.runAgentLoop(req?.user?.id, {
-      title: req.body.title,
-      body: req.body.body,
-      cognitiveDistortionIds: req.body.cognitiveDistortionIds,
+    const result = await journalProcessor.runAgentLoop({
+      userId: req?.user?.id,
+      payload: req.body,
+      withEnemyGeneration: false,
     });
 
     return res.json(result);
@@ -164,7 +164,6 @@ export const journalUpdate = async (req: any, res: any, next: any) => {
       encryptionKey: player?.encryptionKey!,
     });
 
-    await journalProcessor.approveEnemiesGeneration();
     await prisma.journal.update({
       where: { id: req.params.id, belongsToId: req.user.id },
       data: {
@@ -173,7 +172,11 @@ export const journalUpdate = async (req: any, res: any, next: any) => {
       },
     });
 
-    const result = await journalProcessor.runAgentLoop(req?.user?.id, payload);
+    const result = await journalProcessor.runAgentLoop({
+      userId: req?.user?.id,
+      payload,
+      withEnemyGeneration: true,
+    });
 
     return res.json(result);
   } catch (error) {

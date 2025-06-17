@@ -4,7 +4,7 @@ import {
   enemiesGenerationToolDefinition,
 } from "./tools/enemies-generation";
 import {
-  storyBuilding,
+  distortionDetection,
   distortionDetectionToolDefinition,
 } from "./tools/distortion-detection";
 
@@ -19,7 +19,7 @@ export const runTool = async (
 
   switch (toolCall.function.name) {
     case distortionDetectionToolDefinition.name:
-      return storyBuilding(input);
+      return distortionDetection(input);
 
     case enemiesGenerationToolDefinition.name:
       return enemiesGeneration(input);

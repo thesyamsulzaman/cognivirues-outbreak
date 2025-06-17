@@ -1,37 +1,35 @@
-export const slidingWindows = <T>(
-  arr: T[],
-  windowSize: number,
-  step: number
-): T[][] => {
-  const result: T[][] = [];
-  for (let i = 0; i <= arr.length - windowSize; i += step) {
-    result.push(arr.slice(i, i + windowSize));
-  }
-  return result;
-};
-
 export const biasedMergeKeywordWindows = (
-  windows: string[][][],
+  windows: string[][],
   topN = 2
 ): string[][] => {
-  const lastN = windows.slice(-topN);
-  const scored = windows.slice(0, -topN).map((w, i) => ({
-    index: i,
-    score: w.flat().length, // proxy for emotional weight
-  }));
+  if (windows.length <= topN) {
+    return windows.map((window) => [...new Set(window)]);
+  }
 
-  const extra = scored.sort((a, b) => b.score - a.score)[0];
-  const selected = extra ? [...lastN, windows[extra.index]] : lastN;
+  const recentWindows = windows.slice(-topN);
+  const olderWindows = windows.slice(0, -topN);
+  const heaviestWindow = olderWindows
+    .map((window, index) => ({ index, score: window.length }))
+    .reduce((heaviest, current) =>
+      current.score > heaviest.score ? current : heaviest
+    );
 
-  return selected.map((window) => [...new Set(window.flat())]);
+  const selectedWindows = [
+    ...recentWindows,
+    olderWindows[heaviestWindow.index],
+  ];
+
+  return selectedWindows.map((window) => [...new Set(window)]);
 };
 
-export const countDistortionFrequencies = (
+export const countAndDistributeDistortions = (
   data: string[][],
+  storyCount: number,
   allowedKeys?: string[]
-): Record<string, number> => {
+): string[][] => {
   const countMap: Record<string, number> = {};
 
+  // First, count the frequencies of all distortions.
   for (const entry of data) {
     for (const id of entry) {
       if (!allowedKeys || allowedKeys.includes(id)) {
@@ -40,37 +38,26 @@ export const countDistortionFrequencies = (
     }
   }
 
-  return Object.entries(countMap)
-    .sort((a, b) => b[1] - a[1])
-    .reduce((acc, [key, val]) => {
-      acc[key] = val;
-      return acc;
-    }, {} as Record<string, number>);
-};
-
-export const distributeDistortionsEvenly = (
-  freqMap: Record<string, number>,
-  storyCount: number
-) => {
+  // Create a flat list of all distortions based on their frequency.
   const allDistortions: string[] = [];
-
-  for (const [id, freq] of Object.entries(freqMap)) {
+  for (const [id, freq] of Object.entries(countMap)) {
     for (let i = 0; i < freq; i++) {
       allDistortions.push(id);
     }
   }
 
-  // Shuffle to randomize distribution
+  // Shuffle the list to ensure random distribution.
   const shuffled = allDistortions.sort(() => Math.random() - 0.5);
 
-  // Distribute without duplicates in each story
+  // Prepare sets for each story to hold the distributed distortions.
   const storySets: Set<string>[] = Array.from(
     { length: storyCount },
     () => new Set()
   );
 
+  // Distribute each distortion to the best available story.
   for (const distortion of shuffled) {
-    // Find the story that doesn't already have this distortion and has the least distortions
+    // Find the story with the fewest distortions that doesn't already have this one.
     let bestStory = storySets
       .map((set, i) => ({ i, size: set.size, has: set.has(distortion) }))
       .filter((s) => !s.has)
@@ -79,10 +66,11 @@ export const distributeDistortionsEvenly = (
     if (bestStory) {
       storySets[bestStory.i].add(distortion);
     } else {
-      // fallback: allow duplicates if needed (rare edge case)
+      // If all stories already have this distortion, add it to the smallest one.
       storySets.sort((a, b) => a.size - b.size)[0].add(distortion);
     }
   }
 
+  // Convert the sets back to arrays for the final output.
   return storySets.map((set) => Array.from(set));
 };

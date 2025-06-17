@@ -37,7 +37,9 @@ export const distortionDetectionToolDefinition = {
 
 type Args = z.infer<typeof distortionDetectionToolDefinition.parameters>;
 
-export const storyBuilding: ToolFn<Args, string> = async ({ toolArgs }) => {
+export const distortionDetection: ToolFn<Args, string> = async ({
+  toolArgs,
+}) => {
   try {
     const [player, journalAnalysisResponse, contextExtractionResponse] =
       await Promise.all([
@@ -52,8 +54,22 @@ export const storyBuilding: ToolFn<Args, string> = async ({ toolArgs }) => {
             {
               role: "user",
               content: `
-                Take the payload, analyze, breakdown, suggest a feedback and build an alternative story.
+                Journal Entry Payload:
 
+                \`\`\`json
+                  {
+                    "userId": "${toolArgs.payload.userId}"
+                    "title": "${toolArgs.payload.title}",
+                    "body": "${toolArgs.payload.body}",
+                    "cognitiveDistortionIds": ${JSON.stringify(
+                      toolArgs.payload.cognitiveDistortionIds
+                    )}
+                  }
+                \`\`\`
+
+                Instruction
+                Take the payload, analyze, breakdown, suggest a feedback and build an alternative story.
+                
                 Instruction
                 - Provide a comprehensive cognitive distortions breakdown from the following journal payload: "userId", "title" and "body" and extract its main theme, Depth: 1.
                 - Compare your identified distortions with the user's selection of "cognitiveDistortionIds", and assess their accuracy.
@@ -115,10 +131,12 @@ export const storyBuilding: ToolFn<Args, string> = async ({ toolArgs }) => {
         contextKeywords: true,
         cognitiveDistortionIds: true,
       },
+      take: 4, // Limit the result to 4 records
     });
 
     const neighbors = neighborsWithEmbeddings.map((neighbor) => {
       const { embedding, ...rest } = neighbor as any;
+
       return rest;
     });
 

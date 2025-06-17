@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import OpenAI from "openai";
 import { zodFunction, zodResponseFormat } from "openai/helpers/zod";
-import { biasedMergeKeywordWindows, slidingWindows } from "../../utils/common";
+import { biasedMergeKeywordWindows } from "../../utils/common";
 import {
   addMessages,
   clearMessages,
@@ -55,9 +55,9 @@ export const runAIAgent = async ({
         {
           role: "system",
           content: `
-          You are an AI therapist. Your role is to assist users in reflecting on their thoughts, detecting cognitive distortions, and generating meaningful in-game challenges.
-          Your responses should be empathetic, structured, and aligned with Cognitive Behavioral Therapy (CBT) principles, you always use provided tool.
-        `,
+            You are an AI therapist. Your role is to assist users in reflecting on their thoughts, detecting cognitive distortions, and generating meaningful in-game challenges.
+            Your responses should be empathetic, structured, and aligned with Cognitive Behavioral Therapy (CBT) principles, you always use provided tool.
+          `,
         },
         ...messages,
       ],
@@ -78,18 +78,12 @@ export class JournalProcessor {
   private userId: string = "";
   private output: any = {};
   private tools: any[];
-  private enemiesGenerationIsApproved: boolean;
 
   constructor({ tools }) {
     this.tools = tools;
-    this.enemiesGenerationIsApproved = false;
   }
 
-  approveEnemiesGeneration() {
-    this.enemiesGenerationIsApproved = true;
-  }
-
-  async enemyGenerationApproval(history, prompt) {
+  async enemyGenerationApproval({ history, prompt, approved = false }) {
     const lastMessage = history.at(-1);
     const toolCall = lastMessage?.tool_calls?.[0];
 
@@ -97,7 +91,7 @@ export class JournalProcessor {
       return;
     }
 
-    if (this.enemiesGenerationIsApproved) {
+    if (approved) {
       console.log(`[EXECUTING TOOL]: ${toolCall.function.name}`);
       const toolResponse = await runTool(toolCall, prompt);
       const jsonToolResponse = JSON.parse(toolResponse);
@@ -122,7 +116,7 @@ export class JournalProcessor {
     }
   }
 
-  async runAgentLoop(userId, payload) {
+  async runAgentLoop({ userId, payload, withEnemyGeneration = false }) {
     try {
       this.userId = userId;
 
@@ -145,12 +139,14 @@ export class JournalProcessor {
       `;
 
       const history = await getMessages(this.userId);
-      const generatedEnemies = await this.enemyGenerationApproval(
+      const generatedEnemies = await this.enemyGenerationApproval({
         history,
-        prompt
-      );
+        prompt,
+        approved: withEnemyGeneration,
+      });
 
-      if (!this.enemiesGenerationIsApproved) {
+      if (!withEnemyGeneration) {
+        this.output = {};
         await clearMessages(this.userId);
         await addMessages(this.userId, [{ role: "user", content: prompt }]);
       } else {
@@ -220,10 +216,9 @@ export class JournalProcessor {
 
 export async function buildStoryContext(
   userKeywordHistory: string[][],
-  { windowSize = 2, step = 1, useSummarization = true }
+  { useSummarization = true }
 ) {
-  const windows = slidingWindows(userKeywordHistory, windowSize, step);
-  const merged = biasedMergeKeywordWindows(windows);
+  const merged = biasedMergeKeywordWindows(userKeywordHistory);
 
   if (useSummarization) {
     const summaries = await Promise.all(

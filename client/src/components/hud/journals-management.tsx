@@ -11,6 +11,7 @@ import {
   Card,
   Stack,
   Divider,
+  Badge,
 } from "@mantine/core";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -19,6 +20,25 @@ import { defaultValues, JournalFormValues } from "../ui/journaling";
 import usePostUpdateJournals from "@/hooks/mutations/use-put-update-journals";
 import { notifications } from "@mantine/notifications";
 import { QueryClient } from "@tanstack/react-query";
+import { startCase } from "lodash";
+
+const getRandomColor = () =>
+  [
+    "dark",
+    "gray",
+    "red",
+    "pink",
+    "grape",
+    "violet",
+    "indigo",
+    "blue",
+    "cyan",
+    "teal",
+    "green",
+    "lime",
+    "yellow",
+    "orange",
+  ][Math.floor(Math.random() * 14)];
 
 const JournalsManagement = ({ level }) => {
   const {
@@ -132,7 +152,7 @@ const JournalsManagement = ({ level }) => {
           close("journal-list");
         }}
       >
-        <div className="space-y-4 h-[370px]">
+        <div className="space-y-4 h-[470px]">
           {!!journals.length &&
             journals?.map(
               (journal) =>
@@ -150,13 +170,29 @@ const JournalsManagement = ({ level }) => {
                       {journal?.body}
                     </Text>
 
-                    <Card.Section inheritPadding mt="sm" pb="md">
-                      <button
-                        className="text-sm"
+                    <Group mt="md">
+                      {journal?.cognitiveDistortionIds?.map((id) => (
+                        <Badge
+                          key={id}
+                          color={getRandomColor()}
+                          variant="light"
+                        >
+                          {startCase(id)}
+                        </Badge>
+                      ))}
+                    </Group>
+
+                    <Card.Section inheritPadding pb="md">
+                      <Button
                         onClick={() => onSelectJournal(journal)}
+                        color="blue"
+                        fullWidth
+                        mt="md"
+                        radius="md"
+                        size="sm"
                       >
                         Review
-                      </button>
+                      </Button>
                     </Card.Section>
                   </Card>
                 )

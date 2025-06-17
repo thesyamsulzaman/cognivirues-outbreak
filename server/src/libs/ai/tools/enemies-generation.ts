@@ -1,11 +1,8 @@
+import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { buildStoryContext, openai, ToolFn } from "..";
-import { zodResponseFormat } from "openai/helpers/zod";
+import { countAndDistributeDistortions } from "../../../utils/common";
 import { distortionKeys, ENEMIES_AMOUNT, enemySchema } from "../schemas";
-import {
-  countDistortionFrequencies,
-  distributeDistortionsEvenly,
-} from "../../../utils/common";
 
 export const enemiesGenerationToolDefinition = {
   name: "enemies_generation",
@@ -37,20 +34,16 @@ export const enemiesGeneration: ToolFn<Args, string> = async ({ toolArgs }) => {
     const context = await buildStoryContext(
       toolArgs.payload.neighbors?.map(
         (journal: any) => journal?.contextKeywords
-      )!,
-      { windowSize: 2, step: 1, useSummarization: true }
+      ),
+      {}
     );
 
-    const cognitiveDistortionFrequencies = countDistortionFrequencies(
+    const distributedDistortionSets = countAndDistributeDistortions(
       toolArgs.payload.neighbors.map(
         (journal: any) => journal?.cognitiveDistortionIds
       ),
+      ENEMIES_AMOUNT,
       distortionKeys
-    );
-
-    const distributedDistortionSets = distributeDistortionsEvenly(
-      cognitiveDistortionFrequencies,
-      ENEMIES_AMOUNT
     );
 
     const enemies = await Promise.all(
@@ -87,25 +80,25 @@ export const enemiesGeneration: ToolFn<Args, string> = async ({ toolArgs }) => {
           - **backstories**: 2–4 'textMessage' items deepening the emotional struggles or past pain, Each starts with "{CASTER}: ..." .
           - **finalRemarks**: 1–3 'textMessage' items showing the state of the enemy after battle, Each starts with "{CASTER}: ..." .
 
-        ## Actions (Minimum: 2 actions, each represents one distortion):
-        Each **action** must include the following fields:
+          ## Actions (Minimum: 2 actions, each represents one distortion):
+          Each **action** must include the following fields:
 
-        - **distortedThoughts**: An array of 2–5 'textMessage' items.  
-          - Each must begin with '{CASTER}: ...'
-          - Each must vividly express a specific cognitive distortion based on the **correct** distortion key.  
-          - Avoid vague or ambiguous wording—each message must be clearly indicative of the chosen distortion.
+          - **distortedThoughts**: An array of 2–5 'textMessage' items.  
+            - Each must begin with '{CASTER}: ...'
+            - Each must vividly express a specific cognitive distortion based on the **correct** distortion key.  
+            - Avoid vague or ambiguous wording—each message must be clearly indicative of the chosen distortion.
 
-        - **answer**: The correct distortion key from the allowed list: ${distortionKeys}  
-          - This must **directly correspond** to the distortedThoughts above.
+          - **answer**: The correct distortion key from the allowed list: ${distortionKeys}  
+            - This must **directly correspond** to the distortedThoughts above.
 
-        - **options**: An array of 3 **unique** distortion keys from ${distortionKeys}:
-          - **One must match** the 'answer'.
-          - The **other two must be clearly different** distortions from the 'answer' (not easily confused).
-          - The array **must be shuffled randomly** to avoid always putting the correct answer in the same position.
+          - **options**: An array of 3 **unique** distortion keys from ${distortionKeys}:
+            - **One must match** the 'answer'.
+            - The **other two must be clearly different** distortions from the 'answer' (not easily confused).
+            - The array **must be shuffled randomly** to avoid always putting the correct answer in the same position.
 
-        Important Constraints:
-        - The incorrect options must be **meaningfully different** and not plausible correct answers for the given distortedThoughts.
-        - The final 'options' array must be in **random order**, and not predictable or sorted.
+          Important Constraints:
+          - The incorrect options must be **meaningfully different** and not plausible correct answers for the given distortedThoughts.
+          - The final 'options' array must be in **random order**, and not predictable or sorted.
 
           Respond in **valid JSON format** according to this schema, no additional commentary.
         `.trim();
